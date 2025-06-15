@@ -1,0 +1,45 @@
+/* Featured Projects Specific Styling */
+.home-section[aria-labelledby="featured-projects-heading"] ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 12px;
+  margin-bottom: 16px;
+  color: #4b5563; /* matches your text color */
+}
+
+.home-section[aria-labelledby="featured-projects-heading"] ul li {
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  line-height: 1.5;
+  color: #374151;
+}
+
+.home-section[aria-labelledby="featured-projects-heading"] ul li strong {
+  color: #4f46e5; /* Indigo consistent with headings */
+  font-weight: 700;
+}
+
+/* Featured Projects Call-to-Action Button */
+.home-section[aria-labelledby="featured-projects-heading"] .cta.small {
+  display: inline-block;
+  padding: 10px 24px;
+  background-color: #4f46e5; /* Indigo */
+  color: white;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+  font-size: 1rem;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.5);
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.home-section[aria-labelledby="featured-projects-heading"] .cta.small:hover,
+.home-section[aria-labelledby="featured-projects-heading"] .cta.small:focus {
+  background-color: #3730a3; /* Darker Indigo */
+  box-shadow: 0 6px 20px rgba(55, 48, 163, 0.7);
+  transform: scale(1.05);
+  outline: none;
+}

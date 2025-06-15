@@ -1,0 +1,58 @@
+/* Skills.css */
+
+.skills {
+  padding: 4rem 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: #0d1117;
+  color: #c9d1d9;
+  border-radius: 12px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.skills h2 {
+  font-size: 2.5rem;
+  color: #58a6ff;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.skills ul {
+  list-style: none;
+  padding: 0;
+  font-size: 1.1rem;
+  line-height: 1.8;
+}
+
+.skills li {
+  background-color: #161b22;
+  margin-bottom: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-left: 5px solid #58a6ff;
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
+}
+
+.skills li:hover {
+  background-color: #21262d;
+}
+
+.skills li strong {
+  color: #f0f6fc;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .skills {
+    padding: 2rem 1rem;
+  }
+
+  .skills h2 {
+    font-size: 2rem;
+  }
+
+  .skills ul {
+    font-size: 1rem;
+  }
+}

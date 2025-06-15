@@ -1,1 +1,34 @@
+/* About.css */
 
+.about {
+  padding: 4rem 2rem;
+  background-color: #161b22;
+  color: #c9d1d9;
+  text-align: center;
+}
+
+.about h2 {
+  font-size: 2.5rem;
+  color: #58a6ff;
+  margin-bottom: 1.5rem;
+}
+
+.about p {
+  max-width: 800px;
+  margin: 0 auto;
+  font-size: 1.2rem;
+  line-height: 1.7;
+  color: #adbac7;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .about h2 {
+    font-size: 2rem;
+  }
+
+  .about p {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+}
