@@ -1,45 +1,176 @@
-/* Featured Projects Specific Styling */
-.home-section[aria-labelledby="featured-projects-heading"] ul {
-  list-style-type: disc;
-  padding-left: 1.5rem;
-  margin-top: 12px;
-  margin-bottom: 16px;
-  color: #4b5563; /* matches your text color */
+/* Home.css */
+
+.home {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  background: #f9fbfd;
+  color: #1e1e1e;
 }
 
-.home-section[aria-labelledby="featured-projects-heading"] ul li {
-  font-size: 1.125rem;
-  font-weight: 500;
-  margin-bottom: 0.75rem;
-  line-height: 1.5;
-  color: #374151;
+/* Intro Section */
+.home-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2rem;
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  margin-bottom: 3rem;
 }
 
-.home-section[aria-labelledby="featured-projects-heading"] ul li strong {
-  color: #4f46e5; /* Indigo consistent with headings */
+.home-text {
+  flex: 2 1 300px;
+}
+
+.home-text h1 {
+  font-size: 2.8rem;
+  margin-bottom: 0.5rem;
+  color: #1a73e8;
   font-weight: 700;
 }
 
-/* Featured Projects Call-to-Action Button */
-.home-section[aria-labelledby="featured-projects-heading"] .cta.small {
-  display: inline-block;
-  padding: 10px 24px;
-  background-color: #4f46e5; /* Indigo */
-  color: white;
-  font-weight: 600;
-  border-radius: 8px;
-  text-decoration: none;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
-  font-size: 1rem;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.5);
-  cursor: pointer;
-  margin-top: 8px;
+.home-text p {
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+  color: #444;
 }
 
-.home-section[aria-labelledby="featured-projects-heading"] .cta.small:hover,
-.home-section[aria-labelledby="featured-projects-heading"] .cta.small:focus {
-  background-color: #3730a3; /* Darker Indigo */
-  box-shadow: 0 6px 20px rgba(55, 48, 163, 0.7);
-  transform: scale(1.05);
-  outline: none;
+/* CTA Button */
+.cta {
+  display: inline-block;
+  background: linear-gradient(90deg, #1a73e8 60%, #5e9bfc 100%);
+  color: #fff;
+  padding: 0.8rem 2rem;
+  border-radius: 2rem;
+  text-decoration: none;
+  font-weight: 600;
+  transition: background 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 10px rgba(26, 115, 232, 0.12);
+}
+
+.cta:hover {
+  background: linear-gradient(90deg, #1765c1 60%, #1a73e8 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+
+.cta.small {
+  padding: 0.5rem 1.4rem;
+  font-size: 0.95rem;
+  margin-top: 1rem;
+}
+
+/* Profile Image */
+.home-image {
+  flex: 1 1 180px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.home-image img {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 4px solid #e3e9f2;
+  background: #fff;
+  box-shadow: 0 3px 14px rgba(26, 115, 232, 0.1);
+}
+
+/* Reusable Section Style */
+.home-section {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+.home-section h2 {
+  font-size: 1.7rem;
+  margin-bottom: 1rem;
+  color: #1a73e8;
+  font-weight: 600;
+}
+
+.home-section ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.home-section li {
+  margin-bottom: 0.7rem;
+  line-height: 1.6;
+  font-size: 1.05rem;
+}
+
+/* Link Styling */
+.home-section a {
+  color: #1a73e8;
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+.home-section a:hover {
+  color: #125abd;
+}
+
+/* Skills List */
+.skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+}
+
+.skills-list li {
+  background: #eef4fc;
+  border-radius: 0.7rem;
+  padding: 0.6rem 1.1rem;
+  font-size: 1rem;
+  box-shadow: 0 1px 4px rgba(26, 115, 232, 0.04);
+}
+
+/* Contact Section */
+.contact-section {
+  text-align: center;
+  background: linear-gradient(to right, #e0f0ff, #f5faff);
+  border: 1.5px solid #cddff5;
+  box-shadow: 0 2px 10px rgba(26, 115, 232, 0.05);
+}
+
+.contact-section h2 {
+  margin-bottom: 0.7rem;
+}
+
+/* Responsive Layout */
+@media (max-width: 700px) {
+  .home-content {
+    flex-direction: column;
+    padding: 1.2rem;
+    gap: 1.5rem;
+  }
+
+  .home-image img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .home-text h1 {
+    font-size: 2rem;
+  }
+
+  .home-section {
+    padding: 1.2rem;
+  }
+
+  .skills-list {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
 }
