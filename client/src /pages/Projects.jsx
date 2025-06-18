@@ -6,6 +6,13 @@ const projects = [
     title: "TravelXpert",
     tech: "MERN, Google Maps API, OpenAI",
     desc: "An AI-powered travel reservation system featuring hotel & trip booking, map integration, and smart itinerary planning.",
+    code: "https://github.com/saranga423/saranga-portfolio.git",
+    demo: "https://github.com/saranga423/saranga-portfolio.git"
+  },
+  {
+    title: "My Portfolio",
+    tech: "MERN",
+    desc: "MERN Stack Developer | Final-year IT Undergraduate | Passionate about AI, UI/UX & Scalable Web Solutions",
     code: "https://github.com/yourusername/travelxpert",
     demo: "https://travelxpert.vercel.app"
   },
