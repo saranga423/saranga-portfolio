@@ -1,0 +1,47 @@
+/* Light Theme */
+body.light {
+  --bg-color: #ffffff;
+  --text-color: #000000;
+  --link-color: #007bff;
+  --card-bg: #f9f9f9;
+}
+
+/* Dark Theme */
+body.dark {
+  --bg-color: #121212;
+  --text-color: #ffffff;
+  --link-color: #66b2ff;
+  --card-bg: #1e1e1e;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Apply to general components */
+a {
+  color: var(--link-color);
+}
+
+.navbar,
+.home,
+.about,
+.projects,
+.skills,
+.resume,
+.contact {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+}
+
+.project-card,
+.skill-card {
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
