@@ -1,0 +1,55 @@
+/* Base App Container */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff; /* Light theme background */
+  color: #1e293b; /* Light theme text */
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+}
+
+.dark-mode {
+  background-color: #0f172a; /* Dark background */
+  color: #e2e8f0; /* Light text */
+}
+
+/* Main content pushes footer down */
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Reset basic elements */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Optional: Global button style */
+button:focus {
+  outline: none;
+}
+
+/* Smooth transition between themes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Responsive wrapper */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    padding: 10px;
+  }
+}
