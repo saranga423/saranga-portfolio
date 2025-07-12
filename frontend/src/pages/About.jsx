@@ -1,49 +1,173 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import '../styles/About.css'; // Make sure to update styles accordingly
+import React, { useState, useContext } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaWhatsapp } from 'react-icons/fa';
+import '../styles/About.css'; 
+import { ThemeContext } from '../contexts/ThemeContext';
 
 const About = () => {
   const [activeTab, setActiveTab] = useState('overview');
-  const [isDark, setIsDark] = useState(false);
+  const { isDarkMode } = useContext(ThemeContext);
 
-  const toggleTheme = () => setIsDark(!isDark);
+  // State for message box
+  const [showMessage, setShowMessage] = useState(false);
 
   const tabData = {
-    overview: { title: 'Overview', icon: '' },
+    overview: { title: 'Overview', icon: '' }, 
     education: { title: 'Education', icon: '' },
     experience: { title: 'Experience', icon: '' },
     achievements: { title: 'Achievements', icon: '' },
   };
 
-  const educationData = [/* same as before */];
-  const experienceData = [/* same as before */];
-  const certifications = [/* same as before */];
-  const achievements = [/* same as before */];
-  const interests = [/* same as before */];
-  const articles = [/* same as before */];
-
-  const skills = {
-    "Frontend": ["React.js", "HTML5", "CSS3", "JavaScript (ES6+)", "Tailwind CSS"],
-    "Backend": ["Node.js", "Express.js", "Java", "Spring Boot"],
-    "Database": ["MongoDB", "PostgreSQL", "MySQL"],
-    "Tools & Platforms": ["Git", "Docker", "Postman", "Figma", "VS Code"],
-  };
-
-  const projects = [
+  // Data for each section
+  const educationData = [
     {
-      name: "TravelXpert",
-      description: "AI-powered travel reservation platform with hotel and trip management.",
-      technologies: ["React", "Node.js", "MongoDB", "Express"],
-      link: "https://github.com/saranga/travelxpert"
+      degree: "BSc (Hons) in Information Technology",
+      institution: "Sri Lanka Institute of Information Technology (SLIIT)",
+      period: "2022 – Present",
+      status: "Final Year",
+      highlights: ["MERN Stack Development", "Java/Spring Boot", "Agile Methodologies"],
+      link: "https://www.sliit.lk/"
     },
     {
-      name: "Online Learning Platform",
-      description: "Spring Boot + React platform for skill-sharing and learning plans.",
-      technologies: ["Spring Boot", "React", "MySQL"],
-      link: "https://github.com/saranga/learning-platform"
+      degree: "Full Stack Developer Program",
+      institution: "University of Moratuwa (Open Learning)",
+      period: "2022",
+      status: "Completed",
+      highlights: ["React, Node.js, Express", "Database Design", "Git & Deployment"],
+      link: "https://open.uom.lk/"
+    },
+    {
+      degree: "G.C.E. Advanced Level (Biology Stream)",
+      institution: "Mahamaya Girls' College Kandy",
+      period: "2020",
+      status: "Completed",
+      results: "Biology, Physics, Chemistry",
+      highlights: ["Science Stream", "Leadership in Science Club"],
+      link: "https://mahamayagirlscollege.lk/"
     }
   ];
 
+  const experienceData = [
+    {
+      role: "Software Engineering Intern",
+      company: "DMS Software Technologies (Pvt) Ltd",
+      period: "Jul 2024 – Jan 2025",
+      location: "Colombo 00700, Sri Lanka",
+      type: "Internship",
+      description: "Contributed to enterprise-grade platforms for railway systems.",
+      achievements: [
+        
+        "Contributed to enterprise-level software solutions using Oracle technologies, including Oracle Forms, Oracle Reports, and PL/SQL.",
+        "Participated in requirements gathering sessions and UI/UX design reviews to align development with client expectations.",
+        "Developed and maintained backend modules for inventory and procurement management systems.",
+        "Gained hands-on experience in the full Software Development Life Cycle (SDLC), from analysis to deployment.",
+        "Prepared technical documentation and engaged in knowledge transfer sessions to support team collaboration and long-term maintainability."
+      ],
+      technologies: ["Oracle", "PL/SQL"],
+    }, 
+
+    {
+      role: "Software Engineering Intern",
+      company: "DMS Software Technologies (Pvt) Ltd",
+      period: "Jul 2024 – Jan 2025",
+      location: "Colombo 00700, Sri Lanka",
+      type: "Internship",
+      description: "Contributed to enterprise-grade platforms for NKAR Tour Guide Project.",
+      achievements: [
+        
+        "Focused on creating a seamless, intuitive UI/UX tailored to tourists and travel planners.",
+        "Collaborated closely with the development team and participated in client visits to gather feedback and align functionality with business requirements and user expectations.",
+        
+      ],
+      technologies: ["Java", "Spring Boot"],
+    }, 
+  ];
+
+  const certificationsData = [
+    {
+      title: "Online Learning programme in Python",
+      issuer: "University of Moratuwa",
+      date: "2022",
+      credentialId: "META-12345",
+      link: "https://open.uom.lk/",
+      skills: ["React", "Responsive Design", "Version Control"]
+    },
+    {
+      title: "Online Learning Programme in Frontend Web Development",
+      issuer: "University of Moratuwa",
+      date: "2024",
+      credentialId: "META-12345",
+      link: "https://open.uom.lk/",
+      skills: ["React", "Responsive Design", "Version Control"]
+    },
+    {
+      title: "Online Learning programme in Python for Beginners",
+      issuer: "University of Moratuwa",
+      date: "2022",
+      credentialId: "UOM-FSD-2022",
+      link: "https://open.uom.lk/",
+      skills: ["Node.js", "MongoDB", "API Design"]
+    },
+    {
+      title: "Online learning programme in Web Design",
+      issuer: "University of Moratuwa",
+      date: "2022",
+      credentialId: "UOM-FSD-2022",
+      link: "https://open.uom.lk/",
+      skills: ["Node.js", "MongoDB", "API Design"]
+    },
+    {
+      title: "AI/ML Engineer - Stage 1",
+      issuer: "Sri Lanka Institute of Information Technology (SLIIT)",
+      date: "2022",
+      credentialId: "UOM-FSD-2022",
+      link: "https://code.sliit.org/",
+      skills: ["Node.js", "MongoDB", "API Design"]
+    },
+    {
+      title: "Software Engineer Intern",
+      issuer: "HackerRank",
+      date: "2022",
+      credentialId: "UOM-FSD-2022",
+      link: "https://open.uom.lk/",
+      skills: ["Node.js", "MongoDB", "API Design"]
+    }
+  ];
+
+  const achievementsData = [
+    {
+      title: "Final Year Project",
+      description: "Won for AI-powered analytics dashboard",
+      date: "2024",
+      category: "Project"
+    }
+  ];
+
+  const interestsData = [
+    "Full Stack Development",
+    "Artificial Intelligence",
+    "UI/UX Design",
+    "Cloud Computing",
+    "DevOps",
+    "Mobile Development",
+    "Open Source",
+    "Technical Writing",
+    "Problem Solving",
+    "Competitive Programming", 
+    "Photography", 
+    "Stress management"
+  ];
+
+  const articlesData = [
+    {
+      title: "How Agile Is Reshaping Project Delivery in 2025",
+      platform: "Medium",
+      date: "2025",
+      link: "https://medium.com/@rasingollasaranga35"
+    }
+  ];
+
+  // Badge CSS classes helper
   const getBadgeClass = (category) => {
     const badgeMap = {
       'Final Year': 'badge-blue',
@@ -58,18 +182,25 @@ const About = () => {
     return `status-badge ${badgeMap[category] || 'badge-blue'}`;
   };
 
+  // Simulate CV download message
+  const handleDownloadCV = () => {
+    setShowMessage(true);
+    setTimeout(() => setShowMessage(false), 3000);
+  };
+
   return (
-    <div className={`about-page ${isDark ? 'dark-mode' : ''}`}>
+    <div className={`about-page ${isDarkMode ? 'dark-mode' : ''}`}>
       <div className="about-container">
-        {/* Header */}
+
+        {/* Header Section */}
         <div className="header-card">
           <div className="header-content">
             <div className="profile-container">
               <div className="profile-gradient">
-                <div className="profile-inner">SR</div>
+                <div className="profile-inner">SR</div> {/* Initial */}
               </div>
               <div className="status-indicator">
-                <div className="status-dot"></div>
+                <div className="status-dot"></div> {/* Online status */}
               </div>
             </div>
 
@@ -79,28 +210,53 @@ const About = () => {
               <p className="education-info">SLIIT – BSc (Hons) in Information Technology</p>
 
               <div className="contact-info">
-                <div className="contact-item"> Colombo, Sri Lanka</div>
-                <div className="contact-item"> rasingollasaranga35@gmail.com</div>
-                <div className="contact-item"> +94 70 357 2917</div>
+                <div className="contact-item">Colombo, Sri Lanka</div>
+                <div className="contact-item">
+                  <a href="mailto:rasingollasaranga35@gmail.com" className="email-link">
+                  rasingollasaranga35@gmail.com
+                  </a>
+                </div>
+                <div className="contact-item">
+                  <a
+                    href="https://wa.me/94703572917"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="whatsapp-link"
+                  >
+                    <FaWhatsapp style={{ color: '#25D366', marginRight: '6px' }} />
+                    +94 70 357 2917
+                  </a>
+                </div>
               </div>
 
               <div className="action-buttons">
-                <a
-  href="/resume.pdf"
-  download="resume.pdf"
-  className="download-button"
-  onClick={() => alert("Your CV will download now.")}
->
-  Download CV
-</a>
-
-                <button className="mode-toggle" onClick={toggleTheme}>🌓 Toggle Theme</button>
+                <button
+                  onClick={handleDownloadCV}
+                  className="download-button"
+                >
+                  Download CV
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Summary */}
+        {/* Message Box for CV Download */}
+        <AnimatePresence>
+          {showMessage && (
+            <motion.div
+              className="message-box"
+              initial={{ opacity: 0, y: -50 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -50 }}
+              transition={{ duration: 0.3 }}
+            >
+              Your CV will download now. (Simulated)
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Professional Summary */}
         <div className="summary-card">
           <h2 className="summary-title">Professional Summary</h2>
           <p className="summary-text">
@@ -111,7 +267,7 @@ const About = () => {
           </p>
         </div>
 
-        {/* Tab Navigation */}
+        {/* Tabs Section */}
         <div className="tabbed-card">
           <div className="tab-navigation">
             {Object.entries(tabData).map(([key, tab]) => (
@@ -125,219 +281,121 @@ const About = () => {
             ))}
           </div>
 
-          {/* Tab Content with Animation */}
-          <motion.div
-            className="tab-content"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
-          >
-            {activeTab === 'overview' && (
-              <>
-                <h3 className="section-header"> Interests & Passions</h3>
-                <div className="interests-container">
-                  {[
-                    "Full Stack Development",
-                    "Artificial Intelligence",
-                    "UI/UX Design",
-                    "Cloud Computing",
-                    "DevOps",
-                    "Mobile Development",
-                    "Open Source",
-                    "Technical Writing",
-                    "Problem Solving",
-                    "Competitive Programming"
-                  ].map((interest, i) => (
-                    <span key={i} className="interest-tag">{interest}</span>
-                  ))}
-                </div>
-
-                <h3 className="section-header"> Published Articles</h3>
-                <div className="grid-3">
-                  {[
-                    {
-                      title: "Introducing AI in Web Applications",
-                      platform: "Dev.to",
-                      date: "2024",
-                      views: "2.5K",
-                      link: "https://dev.to/saranga/introducing-ai-in-web-applications-654321"
-                    },
-                    {
-                      title: "MERN Stack Best Practices",
-                      platform: "Medium",
-                      date: "2024",
-                      views: "3.2K",
-                      link: "https://medium.com/@rasingollasaranga35"
-                    },
-                    {
-                      title: "Deploying Spring Boot with Docker",
-                      platform: "Hashnode",
-                      date: "2024",
-                      views: "1.8K",
-                      link: "https://hashnode.com/saranga"
-                    }
-                  ].map((a, i) => (
-                    <div key={i} className="article-card">
-                      <h4>{a.title}</h4>
-                      <p>{a.platform} • {a.date}</p>
-                      <p>{a.views} views</p>
-                      <a href={a.link} target="_blank" rel="noreferrer">Read Article </a>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-
-            {activeTab === 'education' && [
-              {
-                degree: "BSc (Hons) in Information Technology",
-                institution: "Sri Lanka Institute of Information Technology (SLIIT)",
-                period: "2022 – Present",
-                status: "Final Year",
-                highlights: ["MERN Stack Development", "Java/Spring Boot", "Agile Methodologies"],
-                link: "https://www.sliit.lk/"
-              },
-              {
-                degree: "Full Stack Developer Program",
-                institution: "University of Moratuwa (Open Learning)",
-                period: "2022",
-                status: "Completed",
-                highlights: ["React, Node.js, Express", "Database Design", "Git & Deployment"],
-                link: "https://open.uom.lk/"
-              },
-              {
-                degree: "G.C.E. Advanced Level (Biology Stream)",
-                institution: "Mahamaya Girls' College Kandy",
-                period: "2020",
-                status: "Completed",
-                results: "Biology, Physics, Chemistry",
-                highlights: ["Science Stream", "Leadership in Science Club"],
-                link: "https://mahamayagirlscollege.lk/"
-              }
-            ].map((edu, i) => (
-              <div key={i} className="info-card">
-                <div className="card-header">
-                  <div>
-                    <h3>{edu.degree}</h3>
-                    <p>{edu.institution}</p>
+          {/* Animated Tab Content */}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              className="tab-content"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.4 }}
+            >
+              {activeTab === 'overview' && (
+                <>
+                  <h3 className="section-header">Interests & Passions</h3>
+                  <div className="interests-container">
+                    {interestsData.map((interest, i) => (
+                      <span key={i} className="interest-tag">{interest}</span>
+                    ))}
                   </div>
-                  <span className={getBadgeClass(edu.status)}>{edu.status}</span>
-                </div>
-                <p> {edu.period}</p>
-                {edu.results && <p>{edu.results}</p>}
-                <ul>{edu.highlights.map((h, i) => <li key={i}>{h}</li>)}</ul>
-                <a href={edu.link} target="_blank" rel="noreferrer">Visit Institution </a>
-              </div>
-            ))}
 
-            {activeTab === 'experience' && [
-              {
-                role: "Software Engineering Intern",
-                company: "DMS Software Technologies (Pvt) Ltd",
-                period: "Jul 2024 – Jan 2025",
-                location: "Colombo 00700, Sri Lanka",
-                type: "Internship",
-                description: "Contributed to enterprise-grade platforms for tourism and railway systems.",
-                achievements: [
-                  "Developed a tourism management module for 50+ clients",
-                  "Improved system performance using Java Spring Boot optimizations",
-                  "Built secure REST APIs integrated with PostgreSQL",
-                  "Collaborated with Agile teams using Jira"
-                ],
-                technologies: ["Java", "Spring Boot", "React.js", "PostgreSQL", "Docker"],
-              },
-              {
-                role: "Software Engineer Intern",
-                company: "HackerRank",
-                period: "2025",
-                location: "Remote",
-                type: "Virtual Internship",
-                description: "Engaged in real-world coding challenges and internal tooling.",
-                achievements: [
-                  "Solved 200+ problems across data structures and algorithms",
-                  "Built and documented internal JS utility libraries",
-                  "Mentored 3 junior developers",
-                  "Achieved 5-star ratings in Java and JavaScript"
-                ],
-                technologies: ["JavaScript", "Python", "Git", "CI/CD"],
-              }
-            ].map((exp, i) => (
-              <div key={i} className="info-card">
-                <div className="card-header">
-                  <div>
-                    <h3>{exp.role}</h3>
-                    <p>{exp.company}</p>
-                  </div>
-                  <span className={getBadgeClass(exp.type)}>{exp.type}</span>
-                </div>
-                <p> {exp.period} •  {exp.location}</p>
-                <p>{exp.description}</p>
-                <ul>{exp.achievements.map((a, i) => <li key={i}>{a}</li>)}</ul>
-                <div className="tech-tags">
-                  {exp.technologies.map((t, i) => <span key={i} className="tech-tag">{t}</span>)}
-                </div>
-              </div>
-            ))}
-
-            {activeTab === 'achievements' && (
-              <>
-                <h3 className="section-header"> Certifications</h3>
-                <div className="grid-2">
-                  {[
-                    {
-                      title: "Meta Front-End Developer Professional Certificate",
-                      issuer: "Coursera",
-                      date: "2024",
-                      credentialId: "META-12345",
-                      link: "https://www.coursera.org/professional-certificates/meta-front-end-developer",
-                      skills: ["React", "Responsive Design", "Version Control"]
-                    },
-                    {
-                      title: "Full Stack Developer Program",
-                      issuer: "University of Moratuwa",
-                      date: "2022",
-                      credentialId: "UOM-FSD-2022",
-                      link: "https://open.uom.lk/",
-                      skills: ["Node.js", "MongoDB", "API Design"]
-                    }
-                  ].map((cert, i) => (
-                    <div key={i} className="info-card">
-                      <h4>{cert.title}</h4>
-                      <p>{cert.issuer} • {cert.date}</p>
-                      <p>ID: {cert.credentialId}</p>
-                      <div className="skill-tags">
-                        {cert.skills.map((s, j) => (
-                          <span key={j} className="skill-tag">{s}</span>
-                        ))}
+                  <h3 className="section-header">Published Articles</h3>
+                  <div className="grid-3">
+                    {articlesData.map((a, i) => (
+                      <div key={i} className="article-card">
+                        <h4>{a.title}</h4>
+                        <p>{a.platform} • {a.date}</p>
+                        <a href={a.link} target="_blank" rel="noreferrer">Read Article</a>
                       </div>
-                      <a href={cert.link} target="_blank" rel="noreferrer">Verify </a>
-                    </div>
-                  ))}
-                </div>
+                    ))}
+                  </div>
+                </>
+              )}
 
-                <h3 className="section-header"> Notable Achievements</h3>
-                <div className="grid-2">
-                  {[
-                    
-                    {
-                      title: "Best Final Year Project",
-                      description: "Won for AI-powered analytics dashboard",
-                      date: "2024",
-                      category: "Project"
-                    }
-                  ].map((ach, i) => (
+              {activeTab === 'education' && (
+                <>
+                  <h3 className="section-header">Education History</h3>
+                  {educationData.map((edu, i) => (
                     <div key={i} className="info-card">
-                      <h4>{ach.title}</h4>
-                      <span className={getBadgeClass(ach.category)}>{ach.category}</span>
-                      <p>{ach.description}</p>
-                      <p>{ach.date}</p>
+                      <div className="card-header">
+                        <div>
+                          <h3>{edu.degree}</h3>
+                          <p>{edu.institution}</p>
+                        </div>
+                        <span className={getBadgeClass(edu.status)}>{edu.status}</span>
+                      </div>
+                      <p className="period-location">{edu.period}</p>
+                      {edu.results && <p className="card-details">{edu.results}</p>}
+                      <ul className="card-highlights">
+                        {edu.highlights.map((h, idx) => <li key={idx}>{h}</li>)}
+                      </ul>
+                      <a href={edu.link} target="_blank" rel="noreferrer" className="card-link">Visit Institution</a>
                     </div>
                   ))}
-                </div>
-              </>
-            )}
-          </motion.div>
-        </div>        
+                </>
+              )}
+
+              {activeTab === 'experience' && (
+                <>
+                  <h3 className="section-header">Work Experience</h3>
+                  {experienceData.map((exp, i) => (
+                    <div key={i} className="info-card">
+                      <div className="card-header">
+                        <div>
+                          <h3>{exp.role}</h3>
+                          <p>{exp.company}</p>
+                        </div>
+                        <span className={getBadgeClass(exp.type)}>{exp.type}</span>
+                      </div>
+                      <p className="period-location">{exp.period} • {exp.location}</p>
+                      <p className="card-description">{exp.description}</p>
+                      <ul className="card-achievements">
+                        {exp.achievements.map((a, idx) => <li key={idx}>{a}</li>)}
+                      </ul>
+                      <div className="tech-tags">
+                        {exp.technologies.map((t, idx) => <span key={idx} className="tech-tag">{t}</span>)}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              {activeTab === 'achievements' && (
+                <>
+                  <h3 className="section-header">Certifications</h3>
+                  <div className="grid-2">
+                    {certificationsData.map((cert, i) => (
+                      <div key={i} className="info-card">
+                        <h4>{cert.title}</h4>
+                        <p className="issuer-date">{cert.issuer} • {cert.date}</p>
+                        <p className="credential-id">ID: {cert.credentialId}</p>
+                        <div className="skill-tags">
+                          {cert.skills.map((s, j) => (
+                            <span key={j} className="skill-tag">{s}</span>
+                          ))}
+                        </div>
+                        <a href={cert.link} target="_blank" rel="noreferrer" className="card-link">Verify</a>
+                      </div>
+                    ))}
+                  </div>
+
+                  <h3 className="section-header">Notable Achievements</h3>
+                  <div className="grid-2">
+                    {achievementsData.map((ach, i) => (
+                      <div key={i} className="info-card">
+                        <h4>{ach.title}</h4>
+                        <span className={getBadgeClass(ach.category)}>{ach.category}</span>
+                        <p className="achievement-description">{ach.description}</p>
+                        <p className="achievement-date">{ach.date}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );

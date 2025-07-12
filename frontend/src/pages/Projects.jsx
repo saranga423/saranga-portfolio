@@ -16,6 +16,7 @@ import salonImg from '../assets/salon.jpg';
 import beatflowImg from '../assets/beatflow.jpg';
 import groceryImg from '../assets/grocery.jpg';
 import topJobsImg from '../assets/topjobs.jpg';
+import onlineLearningImg from '../assets/OnlineLearning.jpg';
 
 const projects = [
   {
@@ -38,8 +39,8 @@ const projects = [
     title: 'Password Checker',
     image: passwordCheckerImg,
     description: 'Real-time password strength validation using zxcvbn.js.',
-    technologies: ['JavaScript', 'HTML', 'CSS', 'zxcvbn.js'],
-    github: 'https://github.com/saranga/password-checker',
+    technologies: ['JavaScript', 'HTML', 'CSS'],
+    github: 'https://github.com/saranga423/password-checker.git',
     demo: 'https://saranga.github.io/password-checker/',
   },
   {
@@ -47,7 +48,7 @@ const projects = [
     image: resumeAnalyzerImg,
     description: 'Analyze resume files for key patterns and insights.',
     technologies: ['JavaScript', 'File API', 'NLP Basics (if applicable)'],
-    github: 'https://github.com/saranga/resume-analyzer',
+    github: 'https://github.com/saranga423/resume-analyzer.git',
     demo: '',
   },
   {
@@ -55,7 +56,7 @@ const projects = [
     image: chatbotImg,
     description: 'Interactive chatbot with preset replies.',
     technologies: ['JavaScript', 'HTML', 'CSS'],
-    github: 'https://github.com/saranga/chatbot-app',
+    github: 'https://github.com/saranga423/chatbot-app.git',
     demo: 'https://saranga.github.io/chatbot-app/',
   },
   {
@@ -71,9 +72,18 @@ const projects = [
     image: ecommerceImg,
     description: 'Online shopping platform with cart & checkout functionalities.',
     technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Redux (if applicable)'],
-    github: 'https://github.com/saranga/E-Commerce-App-MERN-Stack-Project',
+    github: 'https://github.com/saranga423/E-Commerce-App-MERN-Stack-Project.git',
     demo: '',
   },
+
+  {
+  title: 'Online Learning Platform',
+  image: onlineLearningImg,
+  description: 'A web-based learning management system enabling users to explore courses, manage learning plans, and track progress. Features include user authentication, role-based access, and real-time course updates.',
+  technologies: ['React', 'Node.js', 'Express', 'MongoDB', 'Redux'],
+  github: 'https://github.com/saranga423/E-Commerce-App-MERN-Stack-Project.git',
+  demo: '',
+},
   {
     title: 'Gym Management System',
     image: gymImg,

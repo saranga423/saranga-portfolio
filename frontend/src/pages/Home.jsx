@@ -27,9 +27,7 @@ import vercelLogo from '../assets/logos/vercel.svg';
 import intelliJLogo from '../assets/logos/intellij-idea.svg';
 import oracleLogo from '../assets/logos/Oracle.svg';
 import phpLogo from '../assets/logos/PHP.svg';
-
-
-
+import powerbiLogo from '../assets/logos/powerBi.svg';
 
 // Profile Image
 import profileImage from '../assets/pic.jpg';
@@ -37,19 +35,46 @@ import profileImage from '../assets/pic.jpg';
 const Home = () => {
   const navigate = useNavigate();
 
+  // Tech stack logos array
+  const techLogos = [
+    { src: htmlLogo, alt: 'HTML5' },
+    { src: cssLogo, alt: 'CSS3' },
+    { src: jsLogo, alt: 'JavaScript' },
+    { src: tsLogo, alt: 'TypeScript' },
+    { src: reactLogo, alt: 'React' },
+    { src: reduxLogo, alt: 'Redux' },
+    { src: tailwindLogo, alt: 'Tailwind CSS' },
+    { src: nodeLogo, alt: 'Node.js' },
+    { src: mongoLogo, alt: 'MongoDB' },
+    { src: springLogo, alt: 'Spring Boot' },
+    { src: javaLogo, alt: 'Java' },
+    { src: pythonLogo, alt: 'Python' },
+    { src: mysqlLogo, alt: 'MySQL' },
+    { src: gitLogo, alt: 'Git' },
+    { src: githubLogo, alt: 'GitHub' },
+    { src: gimpLogo, alt: 'GIMP' },
+    { src: intelliJLogo, alt: 'IntelliJ IDEA' },
+    { src: vscodeLogo, alt: 'VS Code' },
+    { src: jiraLogo, alt: 'Jira' },
+    { src: netlifyLogo, alt: 'Netlify' },
+    { src: vercelLogo, alt: 'Vercel' },
+    { src: figmaLogo, alt: 'Figma' },
+    { src: oracleLogo, alt: 'Oracle' },
+    { src: phpLogo, alt: 'PHP' },
+    { src: powerbiLogo, alt: 'Power BI' }
+  ];
+
   return (
     <div className="home-container">
       <section className="home-section">
         <div className="home-content">
           {/* Left Side */}
           <div className="home-left">
-
             {/* Intro */}
             <div className="intro-section">
-              <p className="intro-greeting"> Hello, my name is</p>
+              <p className="intro-greeting">Hello, my name is</p>
               <h1 className="intro-name">Saranga Rasingolla</h1>
               <h2 className="intro-title">
-              <br/>
                 Full Stack Developer | UI/UX Enthusiast | Software Engineer
               </h2>
             </div>
@@ -74,16 +99,9 @@ const Home = () => {
             <div className="tech-stack">
               <span className="stack-title">Tech Stack:</span>
               <ul className="stack-icons">
-                {[
-                  htmlLogo, cssLogo, jsLogo, tsLogo, reactLogo,
-                  reduxLogo, tailwindLogo, nodeLogo, mongoLogo,
-                  springLogo, javaLogo, pythonLogo, mysqlLogo, 
-                  gitLogo, githubLogo, gimpLogo, intelliJLogo,
-                  vscodeLogo, jiraLogo, netlifyLogo, vercelLogo,
-                  figmaLogo, oracleLogo, phpLogo, androidLogo, powerbiLogo,
-                ].map((logo, idx) => (
+                {techLogos.map((logo, idx) => (
                   <li key={idx}>
-                    <img src={logo} alt="Tech logo" />
+                    <img src={logo.src} alt={logo.alt} />
                   </li>
                 ))}
               </ul>
@@ -116,6 +134,8 @@ const Home = () => {
               </div>
               <div className="decorative-dot-1"></div>
               <div className="decorative-dot-2"></div>
+              <div className="decorative-dot-3"></div>
+              <div className="decorative-dot-4"></div>
             </div>
           </div>
         </div>
