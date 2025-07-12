@@ -1,13 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.41463888.css",
-    "main.js": "/static/js/main.1390878a.js",
+    "main.css": "/static/css/main.3e43ec10.css",
+    "main.js": "/static/js/main.cdd570ab.js",
     "static/media/grocery.jpg": "/static/media/grocery.d8fabf7545c94aaf2215.jpg",
     "static/media/ecommerce.png": "/static/media/ecommerce.885d3ccfb70945a24b18.png",
     "static/media/salon.jpg": "/static/media/salon.5fd19214e5e4e3e2055f.jpg",
     "static/media/beatflow.jpg": "/static/media/beatflow.f78d10cf33bd06147710.jpg",
     "static/media/travelxpert.jpeg": "/static/media/travelxpert.1ce73c48421b778ffe8d.jpeg",
     "static/media/petcare.png": "/static/media/petcare.6b82f80564394688dd6a.png",
+    "static/media/OnlineLearning.jpg": "/static/media/OnlineLearning.3bd0ad46014a92af33a4.jpg",
     "static/media/resume-analyzer.jpg": "/static/media/resume-analyzer.2980a84660e9238dfed9.jpg",
     "static/media/chatbot.png": "/static/media/chatbot.2d19fe9afd6aae8989b5.png",
     "static/media/gym.jpg": "/static/media/gym.fdf3692cf55c4197e7f7.jpg",
@@ -23,6 +24,7 @@
     "static/media/gimp.svg": "/static/media/gimp.795b7a3aa7f2d183ed84024d6c0987fa.svg",
     "static/media/typescript.svg": "/static/media/typescript.d75f36eaa00819887f4d68e390fa8b12.svg",
     "static/media/redux.svg": "/static/media/redux.40347644f75e299e7a1bb65391e7db7f.svg",
+    "static/media/powerBi.svg": "/static/media/powerBi.838bb3a69a6e5acd2bb31fb1ee4d2be1.svg",
     "static/media/nodejs.svg": "/static/media/nodejs.6d0ce605479079334bce77dc7c3be9ab.svg",
     "static/media/python.svg": "/static/media/python.e146c98dc5517bd9c7e63d6f63a6a1df.svg",
     "static/media/jira.svg": "/static/media/jira.7d173260e51e56adf2facc7d5ec28f1a.svg",
@@ -39,11 +41,11 @@
     "static/media/tailwind.svg": "/static/media/tailwind.973c73e85d4daa24b257ba20298716c4.svg",
     "static/media/css3.svg": "/static/media/css3.315b8fdb9dbf75ae965b80bf368895cd.svg",
     "index.html": "/index.html",
-    "main.41463888.css.map": "/static/css/main.41463888.css.map",
-    "main.1390878a.js.map": "/static/js/main.1390878a.js.map"
+    "main.3e43ec10.css.map": "/static/css/main.3e43ec10.css.map",
+    "main.cdd570ab.js.map": "/static/js/main.cdd570ab.js.map"
   },
   "entrypoints": [
-    "static/css/main.41463888.css",
-    "static/js/main.1390878a.js"
+    "static/css/main.3e43ec10.css",
+    "static/js/main.cdd570ab.js"
   ]
 }
