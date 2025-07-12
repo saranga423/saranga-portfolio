@@ -1,55 +1,53 @@
-/* Base App Container */
+/* App.css */
+
+:root {
+  --bg-light: #f5f5f5;
+  --text-light: #333;
+  --bg-dark: #1e1e1e;
+  --text-dark: #f5f5f5;
+  --primary-color: #4e9af1;
+}
+
+/* Reset basic styles */
+body, html, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: var(--bg-light);
+  color: var(--text-light);
+  transition: background-color 0.3s, color 0.3s;
+}
+
 .app-container {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff; /* Light theme background */
-  color: #1e293b; /* Light theme text */
-  font-family: 'Inter', sans-serif;
-  transition: all 0.3s ease;
+  min-height: 100vh;
 }
 
-.dark-mode {
-  background-color: #0f172a; /* Dark background */
-  color: #e2e8f0; /* Light text */
-}
-
-/* Main content pushes footer down */
 .main-content {
   flex: 1;
-  padding: 20px;
+  padding: 2rem;
+  background-color: var(--bg-light);
 }
 
-/* Reset basic elements */
+/* Dark Mode Styles */
+.dark-mode {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+.dark-mode .main-content {
+  background-color: var(--bg-dark);
+  color: var(--text-dark);
+}
+
+/* Optional: Links and buttons */
 a {
-  color: inherit;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
-button {
-  font-family: inherit;
-  cursor: pointer;
-}
-
-/* Optional: Global button style */
-button:focus {
-  outline: none;
-}
-
-/* Smooth transition between themes */
-* {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-/* Responsive wrapper */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 15px;
-  }
-}
-
-@media (max-width: 480px) {
-  .main-content {
-    padding: 10px;
-  }
+a:hover {
+  text-decoration: underline;
 }
