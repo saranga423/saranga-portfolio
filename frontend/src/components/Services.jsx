@@ -1,5 +1,5 @@
-import React from 'react';
-import '../styles/Services.css'; // Make sure this file exists and is linked
+import React, { useState } from 'react';
+import '../styles/Services.css';
 
 const services = [
   {
@@ -35,6 +35,20 @@ const services = [
 ];
 
 const Services = () => {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setSubmitted(true);
+    setTimeout(() => setSubmitted(false), 4000);
+    setFormData({ name: '', email: '', message: '' });
+  };
+
   return (
     <section className="services-section">
       <div className="services-container">
@@ -42,6 +56,7 @@ const Services = () => {
         <p className="services-intro">
           I offer a range of services that turn ideas into powerful digital solutions.
         </p>
+
         <div className="services-grid">
           {services.map((service, index) => (
             <div className="service-card" key={index}>
@@ -49,6 +64,40 @@ const Services = () => {
               <p className="service-description">{service.description}</p>
             </div>
           ))}
+        </div>
+
+        <div className="contact-form-container">
+          <h3>Interested in a Service?</h3>
+          <p>Fill out the form below and I’ll get back to you soon!</p>
+
+          <form onSubmit={handleSubmit} className="service-form">
+  <input
+    type="text"
+    name="name"
+    placeholder="Your Name"
+    value={formData.name}
+    onChange={handleChange}
+    required
+  />
+  <input
+    type="email"
+    name="email"
+    placeholder="Your Email"
+    value={formData.email}
+    onChange={handleChange}
+    required
+  />
+  <textarea
+    name="message"
+    placeholder="Describe the service you're interested in..."
+    value={formData.message}
+    onChange={handleChange}
+    required
+  />
+  <button type="submit" className="form-button">Send Message</button>
+  {submitted && <p className="success-msg">Message sent! I’ll contact you shortly.</p>}
+</form>
+
         </div>
       </div>
     </section>
