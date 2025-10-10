@@ -1,0 +1,27 @@
+.theme-toggle-btn {
+  padding: 10px 20px;
+  margin-top: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  border: 1px solid #0077b6;
+  transition: all 0.3s ease;
+}
+
+.light-mode .theme-toggle-btn {
+  background-color: #023e8a;
+  color: #caf0f8;
+}
+
+.dark-mode .theme-toggle-btn {
+  background-color: #caf0f8;
+  color: #023e8a;
+}
+
+.theme-toggle-btn:hover {
+  opacity: 0.8;
+}
+.theme-toggle-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.5);
+}
