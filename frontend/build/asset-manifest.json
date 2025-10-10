@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.3e43ec10.css",
-    "main.js": "/static/js/main.cdd570ab.js",
+    "main.css": "/static/css/main.51f844af.css",
+    "main.js": "/static/js/main.56271d32.js",
     "static/media/grocery.jpg": "/static/media/grocery.d8fabf7545c94aaf2215.jpg",
     "static/media/ecommerce.png": "/static/media/ecommerce.885d3ccfb70945a24b18.png",
     "static/media/salon.jpg": "/static/media/salon.5fd19214e5e4e3e2055f.jpg",
@@ -15,37 +15,37 @@
     "static/media/topjobs.jpg": "/static/media/topjobs.93393b752f5b07e05e3b.jpg",
     "static/media/pic.jpg": "/static/media/pic.bd53db771892ee74bb0f.jpg",
     "static/media/portfolio.jpg": "/static/media/portfolio.a8d6b2839e97ce9fdef8.jpg",
-    "static/media/mysql.svg": "/static/media/mysql.5dbd7ffb56a921cecde426cca82f0df4.svg",
-    "static/media/netlify.svg": "/static/media/netlify.16fa7138d5f04b33e5353a2321fa5e6d.svg",
+    "static/media/mysql.svg": "/static/media/mysql.17e572d590819cbe5cac74acfecb45da.svg",
+    "static/media/netlify.svg": "/static/media/netlify.dfd89aac6598f59d67f01252d6137fa9.svg",
     "static/media/vercel.svg": "/static/media/vercel.ea8336d56e8d97483950a5746e725cb6.svg",
     "static/media/react.svg": "/static/media/react.8e63d418a6421cc2662e234ac8af7313.svg",
     "static/media/Oracle.svg": "/static/media/Oracle.94ca7156b8b8ef97904fc1852fded45a.svg",
     "static/media/java.svg": "/static/media/java.3d1f1777f72c1a4ca3003a5378491322.svg",
     "static/media/gimp.svg": "/static/media/gimp.795b7a3aa7f2d183ed84024d6c0987fa.svg",
     "static/media/typescript.svg": "/static/media/typescript.d75f36eaa00819887f4d68e390fa8b12.svg",
-    "static/media/redux.svg": "/static/media/redux.40347644f75e299e7a1bb65391e7db7f.svg",
+    "static/media/redux.svg": "/static/media/redux.b03a9b8e87cb14ff5794365e1e61f627.svg",
     "static/media/powerBi.svg": "/static/media/powerBi.838bb3a69a6e5acd2bb31fb1ee4d2be1.svg",
     "static/media/nodejs.svg": "/static/media/nodejs.6d0ce605479079334bce77dc7c3be9ab.svg",
     "static/media/python.svg": "/static/media/python.e146c98dc5517bd9c7e63d6f63a6a1df.svg",
     "static/media/jira.svg": "/static/media/jira.7d173260e51e56adf2facc7d5ec28f1a.svg",
     "static/media/PHP.svg": "/static/media/PHP.1b673cb4c7045553c86f995ed22196de.svg",
-    "static/media/html5.svg": "/static/media/html5.e248da514edac2a2a66bde8fa0166701.svg",
+    "static/media/html5.svg": "/static/media/html5.65efbef2638205da245f8997a090b79d.svg",
     "static/media/figma.svg": "/static/media/figma.d3e63c6d231c7af226642031e01f0276.svg",
     "static/media/spring.svg": "/static/media/spring.4075d0e0bcbcb1988713ccf4ab5ceb71.svg",
-    "static/media/vscode.svg": "/static/media/vscode.97c18ec8df520282380369bb77e96161.svg",
+    "static/media/vscode.svg": "/static/media/vscode.d688245ba6b690119616afc9e32e5158.svg",
     "static/media/intellij-idea.svg": "/static/media/intellij-idea.16397e34a29f8f1093fda2ad78df9fd4.svg",
     "static/media/github.svg": "/static/media/github.3b21c250a99986431958daaa9246a45a.svg",
     "static/media/git.svg": "/static/media/git.8ecdc3c556e1278611a7cfbb49c857a2.svg",
-    "static/media/javascript.svg": "/static/media/javascript.7bb08cdbe94fc2dfc1b51be8c2dae551.svg",
+    "static/media/javascript.svg": "/static/media/javascript.c2d463fde72a01350f2e8cdd7797b7ba.svg",
     "static/media/mongodb.svg": "/static/media/mongodb.d930c2c4198d1000c2fb8b7d3177a44c.svg",
-    "static/media/tailwind.svg": "/static/media/tailwind.973c73e85d4daa24b257ba20298716c4.svg",
+    "static/media/tailwind.svg": "/static/media/tailwind.03fdecbfd26561a058e76b84d95184a7.svg",
     "static/media/css3.svg": "/static/media/css3.315b8fdb9dbf75ae965b80bf368895cd.svg",
     "index.html": "/index.html",
-    "main.3e43ec10.css.map": "/static/css/main.3e43ec10.css.map",
-    "main.cdd570ab.js.map": "/static/js/main.cdd570ab.js.map"
+    "main.51f844af.css.map": "/static/css/main.51f844af.css.map",
+    "main.56271d32.js.map": "/static/js/main.56271d32.js.map"
   },
   "entrypoints": [
-    "static/css/main.3e43ec10.css",
-    "static/js/main.cdd570ab.js"
+    "static/css/main.51f844af.css",
+    "static/js/main.56271d32.js"
   ]
 }
