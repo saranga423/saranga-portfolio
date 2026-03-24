@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
@@ -12,19 +12,16 @@ import Skills from './pages/Skills';
 import Services from './components/Services';
 import ThemeToggleButton from './components/ThemeToggleButton';
 
-import { ThemeContext } from './contexts/ThemeContext';  // <-- named import
+import { ThemeProvider } from './contexts/ThemeContext';
 import './styles/App.css';
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const toggleTheme = () => setIsDarkMode(prev => !prev);
-
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleTheme }}>
+    <ThemeProvider>
       <Router>
-        <div className={`app-container ${isDarkMode ? 'dark-mode' : ''}`}>
+        <div className="app-container">
           <Navbar />
-          <ThemeToggleButton />  {/* optionally add toggle button here */}
+          <ThemeToggleButton />
           <main className="main-content">
             <Routes>
               <Route path="/" element={<Home />} />
@@ -38,7 +35,7 @@ function App() {
           <Footer />
         </div>
       </Router>
-    </ThemeContext.Provider>
+    </ThemeProvider>
   );
 }
 
