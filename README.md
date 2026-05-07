@@ -1,2 +1,0 @@
-# saranga-portfolio
-saranga-portfolio
