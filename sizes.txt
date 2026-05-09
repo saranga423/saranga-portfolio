@@ -8866,7 +8866,7 @@ blob de55c750c3f0b87f5cb755d9a5e876861da49e30 348 frontend/node_modules/workbox-
 blob de54f8ad8d19342066bc8a249d1dc1015db57c41 88 frontend/node_modules/core-js-pure/stable/function/bind.js
 blob de53c60da2c2b7ff55e9d264b8669745db697118 441 frontend/node_modules/core-js-pure/modules/web.dom-collections.iterator.js
 blob de507516e47b209c154c6664896b9fd01b4cc3ae 557 frontend/node_modules/@typescript-eslint/scope-manager/dist/scope/CatchScope.d.ts.map
-blob de506f24e1ccaeabb014625a78ad6d7fdd481840 2340 frontend/src/assets/logos/linkedin.svg
+blob de506f24e1ccaeabb014625a78ad6d7fdd481840 2340 frontend/src/assets/logos/Linkedin.svg
 blob de4d288c37ced64c3399bcd4b95e1178734b4fa2 1847 frontend/node_modules/eslint-plugin-react/lib/rules/jsx-no-comment-textnodes.js
 blob de4a2ebdff03909ffc1fffcd52a0777d0f6dcead 4321 frontend/node_modules/eslint-plugin-import/lib/rules/exports-last.js
 blob de48c239c1e7775f9bf74269cb133c6351ee56cd 92342 frontend/node_modules/react-icons/fa6/index.d.ts
