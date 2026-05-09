@@ -6,6 +6,16 @@ import {
 } from "react-icons/fi";
 
 import { SectionHeading } from "../About/SectionHeading";
+import project1 from "../../assets/projects/1.jpg";
+import project2 from "../../assets/projects/2.jpg";
+
+
+import project3 from "../../assets/projects/3.jpg";
+import project4 from "../../assets/projects/4.jpg";
+import project5 from "../../assets/projects/5.jpg";
+import project6 from "../../assets/projects/6.jpg";
+import project7 from "../../assets/projects/7.jpg";
+import project8 from "../../assets/projects/8.jpg";
 
 /* =========================================================
    PROJECT DATA
@@ -20,7 +30,7 @@ const projects = [
     tag: "Full Stack · MERN",
 
     blurb:
-      "A full-stack online bus reservation platform for Sri Lanka featuring seat booking, QR-based ticket validation, route management, and realtime scheduling.",
+      "A full-stack reservation platform featuring QR ticket validation, realtime scheduling, route management, and seamless booking workflows.",
 
     stack: [
       "React",
@@ -30,8 +40,11 @@ const projects = [
       "QR Code",
     ],
 
+    image:
+      project1,
+
     grad:
-      "linear-gradient(135deg, #1B2425 0%, #5CAFB0 100%)",
+      "linear-gradient(135deg, #9FB3DF 0%, #BDDDE4 100%)",
   },
 
   {
@@ -42,16 +55,19 @@ const projects = [
     tag: "Mobile UI · Figma",
 
     blurb:
-      "A modern photography-focused mobile application prototype designed with cinematic layouts, immersive galleries, and minimalist user flows.",
+      "A cinematic photography application prototype designed with immersive galleries and refined editorial layouts.",
 
     stack: [
       "Figma",
-      "Mobile Design",
       "UI/UX",
+      "Mobile Design",
     ],
 
+    image:
+      project2,
+
     grad:
-      "linear-gradient(135deg, #2D3E40 0%, #AEC6CF 100%)",
+      "linear-gradient(135deg, #BDDDE4 0%, #FFF1D5 100%)",
   },
 
   {
@@ -59,19 +75,22 @@ const projects = [
 
     title: "BeatFlow",
 
-    tag: "Music App · Mobile",
+    tag: "Music Platform",
 
     blurb:
-      "A next-generation music streaming application concept focused on immersive audio experiences and modern listening workflows.",
+      "A next-generation music streaming concept focused on immersive audio experiences and elegant listening workflows.",
 
     stack: [
-      "Mobile Design",
-      "UI/UX",
       "Figma",
+      "UI/UX",
+      "Mobile",
     ],
 
+    image:
+      project3,
+
     grad:
-      "linear-gradient(135deg, #151A1A 0%, #4D7C8A 100%)",
+      "linear-gradient(135deg, #9EC6F3 0%, #BDDDE4 100%)",
   },
 
   {
@@ -82,16 +101,19 @@ const projects = [
     tag: "Android · Kotlin",
 
     blurb:
-      "An interactive mathematics quiz application for Android featuring score tracking and gamified learning experiences.",
+      "A gamified mathematics learning application featuring score tracking and interactive educational experiences.",
 
     stack: [
       "Kotlin",
       "Android",
-      "Mobile Development",
+      "Mobile",
     ],
 
+    image:
+      project4,
+
     grad:
-      "linear-gradient(135deg, #2D3E40 0%, #8DBCC7 100%)",
+      "linear-gradient(135deg, #9FB3DF 0%, #FFF1D5 100%)",
   },
 
   {
@@ -99,10 +121,10 @@ const projects = [
 
     title: "E-Commerce Platform",
 
-    tag: "MERN · Commerce",
+    tag: "Commerce · MERN",
 
     blurb:
-      "A scalable ecommerce application with product management, authentication, shopping workflows, and responsive customer experiences.",
+      "A scalable ecommerce platform with authentication, product workflows, responsive storefronts, and customer management.",
 
     stack: [
       "MongoDB",
@@ -111,8 +133,11 @@ const projects = [
       "Node.js",
     ],
 
+    image:
+      project5,
+
     grad:
-      "linear-gradient(135deg, #243B40 0%, #6FAFB0 100%)",
+      "linear-gradient(135deg, #BDDDE4 0%, #9EC6F3 100%)",
   },
 
   {
@@ -123,7 +148,7 @@ const projects = [
     tag: "AI · MERN",
 
     blurb:
-      "A conversational chatbot system handling automated responses, intelligent query processing, and user-friendly chat interactions.",
+      "A conversational chatbot system with automated responses, intelligent query handling, and realtime interactions.",
 
     stack: [
       "MongoDB",
@@ -133,8 +158,11 @@ const projects = [
       "NLP",
     ],
 
+    image:
+      project6,
+
     grad:
-      "linear-gradient(135deg, #1B2425 0%, #5CAFB0 100%)",
+      "linear-gradient(135deg, #9FB3DF 0%, #BDDDE4 100%)",
   },
 
   {
@@ -145,7 +173,7 @@ const projects = [
     tag: "AI · Resume Intelligence",
 
     blurb:
-      "A smart resume analysis platform evaluating uploaded resumes, formatting issues, keyword density, and job match insights.",
+      "A smart resume analysis platform delivering formatting insights, keyword analysis, and job match recommendations.",
 
     stack: [
       "MongoDB",
@@ -155,8 +183,11 @@ const projects = [
       "Python",
     ],
 
+    image:
+      project7,
+
     grad:
-      "linear-gradient(135deg, #1E2A2E 0%, #7DA8B5 100%)",
+      "linear-gradient(135deg, #FFF1D5 0%, #BDDDE4 100%)",
   },
 
   {
@@ -167,7 +198,7 @@ const projects = [
     tag: "Booking · MERN",
 
     blurb:
-      "A hotel and reservation management platform supporting booking workflows, customer management, and accommodation administration.",
+      "A hotel and travel management platform supporting modern reservation workflows and accommodation administration.",
 
     stack: [
       "MongoDB",
@@ -176,8 +207,11 @@ const projects = [
       "Node.js",
     ],
 
+    image:
+      project8,
+
     grad:
-      "linear-gradient(135deg, #243B40 0%, #8DBCC7 100%)",
+      "linear-gradient(135deg, #9EC6F3 0%, #FFF1D5 100%)",
   },
 ];
 
@@ -267,7 +301,7 @@ const Projects = () => {
 
                 border border-white/10
 
-                bg-white/[0.03]
+                bg-white/3
 
                 p-2
 
@@ -284,115 +318,190 @@ const Projects = () => {
               ================================================= */}
 
               <div
-                className="
-                  relative
-                  aspect-[16/10]
-                  overflow-hidden
+  className="
+    relative
+    aspect-16/10
+    overflow-hidden
+    rounded-[28px]
+  "
+>
+  {/* =====================================================
+      IMAGE
+  ===================================================== */}
 
-                  rounded-2xl
-                "
+  <img
+    src={p.image}
 
-                style={{
-                  background: p.grad,
-                }}
-              >
-                {/* overlay */}
-                <div
-                  className="
-                    absolute
-                    inset-0
+    alt={p.title}
 
-                    bg-black/10
-                  "
-                />
+    className="
+      absolute
+      inset-0
 
-                {/* number */}
-                <div
-                  className="
-                    absolute
-                    bottom-6
-                    left-6
-                  "
-                >
-                  <span
-                    className="
-                      text-[7rem]
-                      font-black
-                      leading-none
+      h-full
+      w-full
 
-                      text-white/15
-                    "
-                  >
-                    {p.n}
-                  </span>
-                </div>
+      object-cover
 
-                {/* buttons */}
-                <div
-                  className="
-                    absolute
-                    right-5
-                    top-5
+      transition-transform
+      duration-700
 
-                    flex
-                    gap-2
-                  "
-                >
-                  <a
-                    href="#"
+      group-hover:scale-105
+    "
+  />
 
-                    className="
-                      flex
-                      h-11
-                      w-11
-                      items-center
-                      justify-center
+  {/* =====================================================
+      DARK OVERLAY
+  ===================================================== */}
 
-                      rounded-full
+  <div
+    className="
+      absolute
+      inset-0
 
-                      bg-white/10
+      bg-black/35
+    "
+  />
 
-                      text-white
+  {/* =====================================================
+      GRADIENT OVERLAY
+  ===================================================== */}
 
-                      backdrop-blur-xl
+  <div
+    className="
+      absolute
+      inset-0
 
-                      transition-all
+      bg-linear-to-t
+      from-[#0B1120]
+      via-[#0B1120]/20
+      to-transparent
+    "
+  />
 
-                      hover:scale-110
-                      hover:bg-white/20
-                    "
-                  >
-                    <FiGithub size={16} />
-                  </a>
+  {/* =====================================================
+      HOVER GLOW
+  ===================================================== */}
 
-                  <a
-                    href="#"
+  <div
+    className="
+      absolute
+      inset-0
 
-                    className="
-                      flex
-                      h-11
-                      w-11
-                      items-center
-                      justify-center
+      opacity-0
 
-                      rounded-full
+      transition-opacity
+      duration-700
 
-                      bg-white/10
+      group-hover:opacity-100
+    "
+    style={{
+      background:
+        "radial-gradient(circle at top left, rgba(159,179,223,0.22), transparent 45%)",
+    }}
+  />
 
-                      text-white
+  {/* =====================================================
+      NUMBER
+  ===================================================== */}
 
-                      backdrop-blur-xl
+  <div
+    className="
+      absolute
+      bottom-5
+      left-5
+      z-20
+    "
+  >
+    <span
+      className="
+        text-[7rem]
+        font-black
+        leading-none
 
-                      transition-all
+        text-white/10
+      "
+    >
+      {p.n}
+    </span>
+  </div>
 
-                      hover:scale-110
-                      hover:bg-white/20
-                    "
-                  >
-                    <FiArrowUpRight size={16} />
-                  </a>
-                </div>
-              </div>
+  {/* =====================================================
+      ACTIONS
+  ===================================================== */}
+
+  <div
+    className="
+      absolute
+      right-5
+      top-5
+      z-20
+
+      flex
+      gap-2
+    "
+  >
+    <a
+      href="#"
+
+      className="
+        flex
+        h-11
+        w-11
+        items-center
+        justify-center
+
+        rounded-full
+
+        border border-white/10
+
+        bg-black/20
+
+        text-[#FFF1D5]
+
+        backdrop-blur-xl
+
+        transition-all
+
+        hover:scale-110
+        hover:border-[#9EC6F3]/30
+        hover:bg-[#9EC6F3]/20
+      "
+    >
+      <FiGithub size={16} />
+    </a>
+
+    <a
+      href="#"
+
+      className="
+        flex
+        h-11
+        w-11
+        items-center
+        justify-center
+
+        rounded-full
+
+        border border-white/10
+
+        bg-black/20
+
+        text-[#FFF1D5]
+
+        backdrop-blur-xl
+
+        transition-all
+
+        hover:scale-110
+        hover:border-[#9EC6F3]/30
+        hover:bg-[#9EC6F3]/20
+      "
+    >
+      <FiArrowUpRight size={16} />
+    </a>
+  </div>
+</div>
 
               {/* =================================================
                   CONTENT

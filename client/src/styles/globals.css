@@ -4,6 +4,10 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* =====================================================
+   THEME
+===================================================== */
+
 @theme inline {
   --font-display:
     "Times New Roman",
@@ -100,62 +104,28 @@
     var(--glow);
 }
 
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-
-  --color-surface: var(--surface);
-  --color-surface-2: var(--surface-2);
-  --color-glow: var(--glow);
-}
+/* =====================================================
+   ROOT TOKENS
+===================================================== */
 
 :root {
   --radius: 0.875rem;
 
-  /* =====================================================
-     BRAND PALETTE
-     Soft Frost + Cloud Blue
-  ===================================================== */
+  /* Palette */
+  --bg-base: #0f172a;
+  --bg-slate: #111827;
 
-  /* Core tones */
-  --bg-base:    #0F172A;
-  --bg-slate:   #111827;
+  --blue-soft: #9fb3df;
+  --blue-light: #9ec6f3;
+  --ice: #bddde4;
+  --cream: #fff1d5;
 
-  --blue-soft:  #9FB3DF;
-  --blue-light: #9EC6F3;
-  --ice:        #BDDDE4;
-  --cream:      #FFF1D5;
+  /* Semantic */
+  --background:
+    var(--bg-base);
 
-  /* =====================================================
-     SEMANTIC TOKENS
-  ===================================================== */
-
-  --background: var(--bg-base);
-
-  --foreground: var(--cream);
+  --foreground:
+    var(--cream);
 
   --surface:
     color-mix(
@@ -191,13 +161,13 @@
     var(--blue-light);
 
   --primary-foreground:
-    #0F172A;
+    #0f172a;
 
   --secondary:
     var(--blue-soft);
 
   --secondary-foreground:
-    #0F172A;
+    #0f172a;
 
   --muted:
     color-mix(
@@ -217,13 +187,13 @@
     var(--ice);
 
   --accent-foreground:
-    #0F172A;
+    #0f172a;
 
   --destructive:
     oklch(0.65 0.22 25);
 
   --destructive-foreground:
-    #fff;
+    #ffffff;
 
   --border:
     color-mix(
@@ -277,147 +247,327 @@
     linear-gradient(
       175deg,
       var(--bg-base) 0%,
-      #0B1120 100%
+      #0b1120 100%
     );
-
-  /* =====================================================
-     TEXT GRADIENT
-  ===================================================== */
 
   --gradient-text:
     linear-gradient(
       160deg,
-      #FFF1D5 0%,
-      #BDDDE4 45%,
-      #9EC6F3 100%
+      #fff1d5 0%,
+      #bddde4 45%,
+      #9ec6f3 100%
     );
 
-  /* =====================================================
-     SHADOWS
-  ===================================================== */
+  /* Shadows */
 
   --shadow-elegant:
     0 30px 80px -30px
-    color-mix(
-      in oklab,
-      var(--blue-light) 20%,
-      transparent
-    );
+      color-mix(
+        in oklab,
+        var(--blue-light) 20%,
+        transparent
+      );
 
   --shadow-soft:
     0 10px 40px -20px
-    rgba(0, 0, 0, 0.65);
+      rgba(0, 0, 0, 0.65);
 }
 
-.dark { color-scheme: dark; }
+/* =====================================================
+   DARK MODE
+===================================================== */
 
-/* ── Base layer ──────────────────────────────────────────────────── */
+.dark {
+  color-scheme: dark;
+}
+
+/* =====================================================
+   BASE
+===================================================== */
+
 @layer base {
-  * { border-color: var(--color-border); }
+  * {
+    border-color:
+      var(--color-border);
+  }
 
-  html, body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
+  html,
+  body {
+    background:
+      var(--background);
+
+    color:
+      var(--foreground);
+
+    font-family:
+      var(--font-sans);
+
+    -webkit-font-smoothing:
+      antialiased;
+
+    scroll-behavior:
+      smooth;
   }
 
   body {
     background-image:
       radial-gradient(
         1200px 600px at 10% -10%,
-        color-mix(in oklab, var(--ember) 8%, transparent),
+        color-mix(
+          in oklab,
+          var(--blue-light) 8%,
+          transparent
+        ),
         transparent 60%
       ),
+
       radial-gradient(
         900px 500px at 100% 10%,
-        color-mix(in oklab, var(--amber-warm) 6%, transparent),
+        color-mix(
+          in oklab,
+          var(--blue-soft) 6%,
+          transparent
+        ),
         transparent 60%
       );
-    background-attachment: fixed;
+
+    background-attachment:
+      fixed;
   }
 
   ::selection {
-    background: color-mix(in oklab, var(--ember) 45%, transparent);
-    color: #fff;
+    background:
+      color-mix(
+        in oklab,
+        var(--blue-light) 45%,
+        transparent
+      );
+
+    color:
+      #fff;
   }
 
-  h1, h2, h3, h4 {
-    font-family: var(--font-display);
-    letter-spacing: -0.02em;
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family:
+      var(--font-display);
+
+    letter-spacing:
+      -0.02em;
   }
 }
 
-/* ── Utilities ───────────────────────────────────────────────────── */
-@layer utilities {
-  .font-display  { font-family: var(--font-display); }
-  .font-sans-ui  { font-family: var(--font-sans); }
+/* =====================================================
+   UTILITIES
+===================================================== */
 
-  /* Ember-to-amber shimmer text */
-  .text-gradient {
-    background: var(--gradient-text);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+@layer utilities {
+  .font-display {
+    font-family:
+      var(--font-display);
   }
 
-  /* Glass surfaces — warm-tinted */
+  .font-sans-ui {
+    font-family:
+      var(--font-sans);
+  }
+
+  .text-gradient {
+    background:
+      var(--gradient-text);
+
+    -webkit-background-clip:
+      text;
+
+    background-clip:
+      text;
+
+    color:
+      transparent;
+  }
+
   .glass {
-    background: color-mix(in oklab, var(--bg-slate) 32%, transparent);
-    backdrop-filter: blur(18px) saturate(130%);
-    -webkit-backdrop-filter: blur(18px) saturate(130%);
-    border: 1px solid color-mix(in oklab, var(--cream) 8%, transparent);
+    background:
+      color-mix(
+        in oklab,
+        var(--bg-slate) 32%,
+        transparent
+      );
+
+    backdrop-filter:
+      blur(18px)
+      saturate(130%);
+
+    -webkit-backdrop-filter:
+      blur(18px)
+      saturate(130%);
+
+    border:
+      1px solid
+      color-mix(
+        in oklab,
+        var(--cream) 8%,
+        transparent
+      );
   }
 
   .glass-strong {
-    background: color-mix(in oklab, var(--bg-slate) 58%, transparent);
-    backdrop-filter: blur(24px) saturate(150%);
-    -webkit-backdrop-filter: blur(24px) saturate(150%);
-    border: 1px solid color-mix(in oklab, var(--cream) 12%, transparent);
+    background:
+      color-mix(
+        in oklab,
+        var(--bg-slate) 58%,
+        transparent
+      );
+
+    backdrop-filter:
+      blur(24px)
+      saturate(150%);
+
+    -webkit-backdrop-filter:
+      blur(24px)
+      saturate(150%);
+
+    border:
+      1px solid
+      color-mix(
+        in oklab,
+        var(--cream) 12%,
+        transparent
+      );
   }
 
-  /* Grid texture — warm tone */
   .grid-texture {
     background-image:
       linear-gradient(
         to right,
-        color-mix(in oklab, var(--cream) 3.5%, transparent) 1px,
+        color-mix(
+          in oklab,
+          var(--cream) 3.5%,
+          transparent
+        ) 1px,
         transparent 1px
       ),
+
       linear-gradient(
         to bottom,
-        color-mix(in oklab, var(--cream) 3.5%, transparent) 1px,
+        color-mix(
+          in oklab,
+          var(--cream) 3.5%,
+          transparent
+        ) 1px,
         transparent 1px
       );
-    background-size: 56px 56px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+
+    background-size:
+      56px 56px;
+
+    mask-image:
+      radial-gradient(
+        ellipse at center,
+        black 30%,
+        transparent 75%
+      );
   }
 
-  /* Glows */
-  .glow-ember   { box-shadow: 0 0 60px -10px var(--glow); }
-  .glow-amber   { box-shadow: 0 0 40px -10px color-mix(in oklab, var(--amber-warm) 30%, transparent); }
+  .glow-blue {
+    box-shadow:
+      0 0 60px -10px
+      var(--glow);
+  }
 
-  .ring-elegant { box-shadow: 0 0 0 1px color-mix(in oklab, var(--cream) 10%, transparent), var(--shadow-soft); }
-  .shadow-elegant { box-shadow: var(--shadow-elegant); }
+  .ring-elegant {
+    box-shadow:
+      0 0 0 1px
+      color-mix(
+        in oklab,
+        var(--cream) 10%,
+        transparent
+      ),
 
-  .hairline { border-color: color-mix(in oklab, var(--cream) 9%, transparent); }
+      var(--shadow-soft);
+  }
+
+  .shadow-elegant {
+    box-shadow:
+      var(--shadow-elegant);
+  }
+
+  .hairline {
+    border-color:
+      color-mix(
+        in oklab,
+        var(--cream) 9%,
+        transparent
+      );
+  }
 }
 
-/* ── Keyframes ───────────────────────────────────────────────────── */
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+
 @keyframes float-slow {
-  0%, 100% { transform: translateY(0px);   }
-  50%       { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform:
+      translateY(0px);
+  }
+
+  50% {
+    transform:
+      translateY(-12px);
+  }
 }
-.animate-float { animation: float-slow 6s ease-in-out infinite; }
+
+.animate-float {
+  animation:
+    float-slow
+    6s
+    ease-in-out
+    infinite;
+}
 
 @keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+  0% {
+    background-position:
+      -200% 0;
+  }
+
+  100% {
+    background-position:
+      200% 0;
+  }
 }
 
-/* Ember pulse — for live/status indicators */
-@keyframes ember-pulse {
-  0%, 100% { box-shadow: 0 0 0 0   color-mix(in oklab, var(--ember) 60%, transparent); }
-  50%       { box-shadow: 0 0 0 6px color-mix(in oklab, var(--ember) 0%,  transparent); }
+@keyframes pulse-glow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 0
+      color-mix(
+        in oklab,
+        var(--blue-light) 60%,
+        transparent
+      );
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 6px
+      color-mix(
+        in oklab,
+        var(--blue-light) 0%,
+        transparent
+      );
+  }
 }
-.animate-ember-pulse { animation: ember-pulse 2.2s ease-in-out infinite; }
+
+.animate-pulse-glow {
+  animation:
+    pulse-glow
+    2.2s
+    ease-in-out
+    infinite;
+}
