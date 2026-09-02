@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { SectionHeading } from "../About/SectionHeading";
 
 import {
@@ -17,34 +17,29 @@ import {
   FiCode, FiLayout, FiServer, FiDatabase, FiTool,
   FiSmartphone, FiBarChart2, FiPenTool, FiUsers, FiCheckSquare,
   FiCloud, FiCpu, FiX, FiSearch, FiChevronRight,
-  FiZap, FiStar,
+  FiArrowUpRight,
+  FiZap,
 } from "react-icons/fi";
-
-// ─── Palette ─────────────────────────────────────────────────────────────────
-
-const P = {
-  bg:     "#070B14",
-  bg2:    "#0D1220",
-  bg3:    "#111827",
-  cream:  "#FFF1D5",
-  border: "rgba(255,255,255,0.07)",
-  serif:  `'Times New Roman', Times, serif`,
-  mono:   `'Courier New', Courier, monospace`,
-};
 
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type IconComponent = React.ComponentType<{ size?: number; color?: string; className?: string }>;
 type SkillLevel = "expert" | "proficient" | "familiar";
-type Skill = { icon?: IconComponent; name: string; level?: SkillLevel };
-type Category = {
-  id: string; label: string; filterIcon: IconComponent;
-  color: string; glowColor: string; skills: Skill[];
+
+type Skill = {
+  icon?: IconComponent;
+  name: string;
+  level?: SkillLevel;
 };
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
+type Category = {
+  id: string;
+  label: string;
+  filterIcon: IconComponent;
+  color: string;
+  glowColor: string;
+  skills: Skill[];
+};
 
 const categories: Category[] = [
   {
@@ -190,378 +185,411 @@ const categories: Category[] = [
   },
 ];
 
-const LEVEL_META: Record<SkillLevel, { label: string; color: string; bar: number }> = {
-  expert:     { label: "Expert",     color: "#6EE7B7", bar: 100 },
-  proficient: { label: "Proficient", color: "#818CF8", bar: 68  },
-  familiar:   { label: "Familiar",   color: "#FCD34D", bar: 38  },
+const LEVEL_META: Record<SkillLevel, { label: string; bar: number; color: string }> = {
+  expert: { label: "Expert", bar: 100, color: "#6EE7B7" },
+  proficient: { label: "Proficient", bar: 68, color: "#818CF8" },
+  familiar: { label: "Familiar", bar: 38, color: "#FCD34D" },
 };
 
-const totalSkills = categories.reduce((s, c) => s + c.skills.length, 0);
-const expertCount = categories.flatMap(c => c.skills).filter(s => s.level === "expert").length;
+const totalSkills = categories.reduce((sum, category) => sum + category.skills.length, 0);
+const expertCount = categories
+  .flatMap((category) => category.skills)
+  .filter((skill) => skill.level === "expert").length;
 
-const ROWS: { catIds: string[]; duration: number; direction: 1 | -1; maxWidth: number }[] = [
-  { catIds: ["ai", "design"],                          duration: 34, direction: -1, maxWidth: 360 },
-  { catIds: ["languages", "frontend", "backend"],      duration: 42, direction:  1, maxWidth: 560 },
-  { catIds: ["mobile", "data", "soft"],                duration: 38, direction: -1, maxWidth: 560 },
-  { catIds: ["database", "tools", "cloud", "testing"], duration: 50, direction:  1, maxWidth: 760 },
+const ROWS = [
+  { catIds: ["ai", "design"], duration: 34, direction: -1 as const },
+  { catIds: ["languages", "frontend", "backend"], duration: 42, direction: 1 as const },
+  { catIds: ["mobile", "data", "soft"], duration: 38, direction: -1 as const },
+  { catIds: ["database", "tools", "cloud", "testing"], duration: 50, direction: 1 as const },
 ];
 
-// ─── Proficiency Bar ──────────────────────────────────────────────────────────
-
-function ProficiencyBar({ level, color }: { level: SkillLevel; color: string }) {
+function ProficiencyBar({ level }: { level: SkillLevel }) {
   const meta = LEVEL_META[level];
+
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 4 }}>
-      <div
-        style={{
-          flex: 1, height: 2,
-          background: "rgba(255,255,255,0.07)",
-          borderRadius: 2, overflow: "hidden",
-        }}
-      >
+    <div className="mt-3 flex items-center gap-2">
+      <div className="h-1 flex-1 overflow-hidden rounded-full bg-white/[0.07]">
         <motion.div
           initial={{ width: 0 }}
-          animate={{ width: `${meta.bar}%` }}
-          transition={{ duration: 0.7, ease: EASE, delay: 0.1 }}
-          style={{ height: "100%", background: meta.color, borderRadius: 2 }}
+          whileInView={{ width: `${meta.bar}%` }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, ease: EASE }}
+          className="h-full rounded-full"
+          style={{ background: meta.color }}
         />
       </div>
-      <span style={{
-        fontFamily: P.mono, fontSize: 8, letterSpacing: "0.14em",
-        textTransform: "uppercase", color: meta.color, opacity: 0.75,
-        whiteSpace: "nowrap",
-      }}>
+      <span
+        className="font-mono text-[8px] uppercase tracking-[0.14em]"
+        style={{ color: meta.color }}
+      >
         {meta.label}
       </span>
     </div>
   );
 }
 
-// ─── Search Bar ───────────────────────────────────────────────────────────────
-
 function SearchBar({
-  value, onChange, onClear,
+  value,
+  onChange,
+  onClear,
 }: {
   value: string;
-  onChange: (v: string) => void;
+  onChange: (value: string) => void;
   onClear: () => void;
 }) {
-  const ref = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  // ⌘/ focuses search
   useEffect(() => {
-    const fn = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "/") {
-        e.preventDefault();
-        ref.current?.focus();
+    const handleShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key === "/") {
+        event.preventDefault();
+        inputRef.current?.focus();
       }
     };
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
+
+    window.addEventListener("keydown", handleShortcut);
+    return () => window.removeEventListener("keydown", handleShortcut);
   }, []);
 
   return (
-    <div
-      style={{
-        display: "flex", alignItems: "center", gap: 10,
-        background: "rgba(255,255,255,0.03)",
-        border: `1px solid ${P.border}`,
-        padding: "0 14px", height: 40, maxWidth: 340,
-        position: "relative",
-      }}
-    >
-      <FiSearch size={13} color="rgba(255,255,255,0.3)" />
-      <input
-        ref={ref}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Search skills…"
-        style={{
-          flex: 1, background: "transparent", border: "none", outline: "none",
-          fontFamily: P.mono, fontSize: 11.5, color: P.cream, caretColor: "#818CF8",
-        }}
-        aria-label="Search skills"
+    <div className="group flex h-11 w-full max-w-sm items-center gap-3 rounded-xl border border-white/[0.08] bg-white/[0.025] px-3.5 transition-colors focus-within:border-primary/30 focus-within:bg-primary/[0.035]">
+      <FiSearch
+        className="shrink-0 text-white/25 transition-colors group-focus-within:text-primary/70"
+        size={14}
       />
-      {value && (
+      <input
+        ref={inputRef}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        placeholder="Search skills..."
+        aria-label="Search skills"
+        className="min-w-0 flex-1 bg-transparent font-mono text-[11px] text-white outline-none placeholder:text-white/20"
+      />
+      {value ? (
         <button
+          type="button"
           onClick={onClear}
-          style={{ background: "transparent", border: "none", cursor: "pointer", padding: 2 }}
           aria-label="Clear search"
+          className="rounded-md p-1 text-white/25 transition-colors hover:bg-white/5 hover:text-white/70"
         >
-          <FiX size={12} color="rgba(255,255,255,0.3)" />
+          <FiX size={12} />
         </button>
+      ) : (
+        <kbd className="hidden rounded-md border border-white/[0.07] bg-white/[0.04] px-1.5 py-1 font-mono text-[8px] text-white/20 sm:block">
+          ⌘/
+        </kbd>
       )}
-      <kbd style={{
-        fontFamily: P.mono, fontSize: 9, color: "rgba(255,255,255,0.18)",
-        background: "rgba(255,255,255,0.05)", border: `1px solid ${P.border}`,
-        padding: "2px 5px", letterSpacing: "0.05em",
-      }}>
-        ⌘/
-      </kbd>
     </div>
   );
 }
-
-// ─── Level Legend ─────────────────────────────────────────────────────────────
 
 function LevelLegend() {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-      {(["expert", "proficient", "familiar"] as SkillLevel[]).map((lvl) => {
-        const m = LEVEL_META[lvl];
-        return (
-          <div key={lvl} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <span style={{ width: 6, height: 6, borderRadius: "50%", background: m.color, flexShrink: 0 }} />
-            <span style={{ fontFamily: P.mono, fontSize: 8.5, letterSpacing: "0.14em", textTransform: "uppercase", color: P.cream, opacity: 0.35 }}>
-              {m.label}
-            </span>
-          </div>
-        );
-      })}
+    <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      {(["expert", "proficient", "familiar"] as SkillLevel[]).map((level) => (
+        <div key={level} className="flex items-center gap-2">
+          <span
+            className="h-1.5 w-1.5 rounded-full"
+            style={{ background: LEVEL_META[level].color }}
+          />
+          <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-white/30">
+            {LEVEL_META[level].label}
+          </span>
+        </div>
+      ))}
     </div>
   );
 }
 
-// ─── Stat Pill ────────────────────────────────────────────────────────────────
-
-function StatPill({ value, label, color }: { value: number | string; label: string; color: string }) {
+function StatCard({
+  value,
+  label,
+  accent,
+}: {
+  value: number | string;
+  label: string;
+  accent: string;
+}) {
   return (
-    <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
-      padding: "10px 20px",
-      background: `${color}08`,
-      border: `1px solid ${color}20`,
-    }}>
-      <span style={{
-        fontFamily: P.mono, fontSize: 20, fontWeight: 700,
-        color, letterSpacing: "-0.02em", lineHeight: 1,
-      }}>
+    <div className="rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 py-3.5">
+      <div className="font-mono text-xl font-semibold tracking-tight" style={{ color: accent }}>
         {value}
-      </span>
-      <span style={{
-        fontFamily: P.mono, fontSize: 8, letterSpacing: "0.18em",
-        textTransform: "uppercase", color: P.cream, opacity: 0.3, marginTop: 4,
-      }}>
+      </div>
+      <div className="mt-1 font-mono text-[8px] uppercase tracking-[0.18em] text-white/25">
         {label}
-      </span>
+      </div>
     </div>
   );
 }
 
-// ─── Skill Panel ──────────────────────────────────────────────────────────────
+function CategoryCard({
+  category,
+  index,
+  onOpen,
+}: {
+  category: Category;
+  index: number;
+  onOpen: (category: Category) => void;
+}) {
+  const Icon = category.filterIcon;
+  const expert = category.skills.filter((skill) => skill.level === "expert").length;
 
-function SkillPanel({ cat, onClose }: { cat: Category; onClose: () => void }) {
-  const [panelSearch, setPanelSearch] = useState("");
+  return (
+    <motion.button
+      type="button"
+      initial={{ opacity: 0, y: 14 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ delay: index * 0.035, duration: 0.55, ease: EASE }}
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.99 }}
+      onClick={() => onOpen(category)}
+      className="group relative min-h-[158px] overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5 text-left transition-colors hover:border-white/[0.14] hover:bg-white/[0.04]"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-12 -top-12 h-32 w-32 rounded-full opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+        style={{ background: category.glowColor }}
+      />
+
+      <div className="relative flex items-start justify-between">
+        <span
+          className="flex h-10 w-10 items-center justify-center rounded-xl border"
+          style={{
+            color: category.color,
+            borderColor: `${category.color}28`,
+            background: `${category.color}0d`,
+          }}
+        >
+          <Icon size={17} />
+        </span>
+
+        <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-white/15">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+      </div>
+
+      <div className="relative mt-7">
+        <h3 className="text-sm font-medium text-white/75 transition-colors group-hover:text-white">
+          {category.label}
+        </h3>
+        <div className="mt-2 flex items-center gap-2">
+          <span className="font-mono text-[9px] text-white/25">
+            {category.skills.length} skills
+          </span>
+          {expert > 0 && (
+            <>
+              <span className="text-white/10">·</span>
+              <span className="font-mono text-[9px] text-emerald-300/50">
+                {expert} expert
+              </span>
+            </>
+          )}
+        </div>
+      </div>
+
+      <FiArrowUpRight
+        size={13}
+        className="absolute bottom-5 right-5 text-white/15 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:text-primary/80"
+      />
+    </motion.button>
+  );
+}
+
+function SkillPanel({
+  category,
+  onClose,
+}: {
+  category: Category;
+  onClose: () => void;
+}) {
+  const [query, setQuery] = useState("");
+  const reduceMotion = Boolean(useReducedMotion());
+  const Icon = category.filterIcon;
 
   useEffect(() => {
-    const fn = (e: KeyboardEvent) => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKey);
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKey);
+    };
   }, [onClose]);
 
-  const CatIcon = cat.filterIcon;
-  const filtered = cat.skills.filter(s =>
-    s.name.toLowerCase().includes(panelSearch.toLowerCase())
+  const filtered = useMemo(
+    () =>
+      category.skills.filter((skill) =>
+        skill.name.toLowerCase().includes(query.trim().toLowerCase())
+      ),
+    [category.skills, query]
   );
 
-  const expertN     = cat.skills.filter(s => s.level === "expert").length;
-  const profN       = cat.skills.filter(s => s.level === "proficient").length;
-  const familiarN   = cat.skills.filter(s => s.level === "familiar").length;
+  const counts = {
+    expert: category.skills.filter((skill) => skill.level === "expert").length,
+    proficient: category.skills.filter((skill) => skill.level === "proficient").length,
+    familiar: category.skills.filter((skill) => skill.level === "familiar").length,
+  };
 
   return (
     <motion.div
-      key="overlay"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.2 }}
-      onClick={onClose}
-      style={{
-        position: "fixed", inset: 0, zIndex: 300,
-        background: "rgba(7,11,20,0.88)", backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
-      }}
+      className="fixed inset-0 z-[300] flex items-center justify-center bg-[#05070b]/85 p-4 backdrop-blur-xl sm:p-6"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="skill-panel-title"
+      onMouseDown={onClose}
     >
       <motion.div
-        initial={{ scale: 0.94, opacity: 0, y: 20 }}
-        animate={{ scale: 1, opacity: 1, y: 0 }}
-        exit={{ scale: 0.94, opacity: 0, y: 20 }}
-        transition={{ type: "spring", stiffness: 280, damping: 28 }}
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          maxWidth: 580, width: "100%", maxHeight: "90vh",
-          background: P.bg2,
-          border: `1px solid ${cat.color}25`,
-          display: "flex", flexDirection: "column",
-          overflow: "hidden",
+        initial={{
+          opacity: 0,
+          y: reduceMotion ? 0 : 22,
+          scale: reduceMotion ? 1 : 0.97,
         }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{
+          opacity: 0,
+          y: reduceMotion ? 0 : 12,
+          scale: reduceMotion ? 1 : 0.98,
+        }}
+        transition={{ duration: 0.3, ease: EASE }}
+        onMouseDown={(event) => event.stopPropagation()}
+        className="flex max-h-[88vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border bg-[#0b0e16] shadow-2xl"
+        style={{ borderColor: `${category.color}30` }}
       >
-        {/* Header */}
-        <div style={{
-          padding: "24px 28px 20px",
-          borderBottom: `1px solid ${P.border}`,
-          background: `linear-gradient(135deg, ${cat.color}08, transparent)`,
-          flexShrink: 0,
-        }}>
-          <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{
-                width: 44, height: 44,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                background: `${cat.color}15`,
-                border: `1px solid ${cat.color}30`,
-              }}>
-                <CatIcon size={20} color={cat.color} />
+        <div
+          className="border-b border-white/[0.07] p-5 sm:p-6"
+          style={{
+            background: `linear-gradient(135deg, ${category.color}0d, transparent 55%)`,
+          }}
+        >
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div
+                className="flex h-12 w-12 items-center justify-center rounded-xl border"
+                style={{
+                  color: category.color,
+                  borderColor: `${category.color}30`,
+                  background: `${category.color}12`,
+                }}
+              >
+                <Icon size={20} />
               </div>
               <div>
-                <p style={{ fontFamily: P.mono, fontSize: 8.5, letterSpacing: "0.2em", textTransform: "uppercase", color: cat.color, opacity: 0.7, marginBottom: 3 }}>
-                  Domain
+                <p
+                  className="font-mono text-[8px] uppercase tracking-[0.22em]"
+                  style={{ color: category.color }}
+                >
+                  Skill domain
                 </p>
-                <h3 style={{ fontFamily: P.serif, fontSize: 24, fontWeight: 400, color: P.cream, lineHeight: 1 }}>
-                  {cat.label}
+                <h3 id="skill-panel-title" className="mt-1 text-xl font-semibold tracking-tight text-white">
+                  {category.label}
                 </h3>
               </div>
             </div>
+
             <button
+              type="button"
               onClick={onClose}
-              aria-label="Close"
-              style={{
-                background: "rgba(255,255,255,0.05)", border: `1px solid ${P.border}`,
-                color: P.cream, opacity: 0.5, cursor: "pointer", padding: 6,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                transition: "opacity 0.15s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-              onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+              aria-label="Close skill details"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-white/[0.08] bg-white/[0.03] text-white/35 transition-colors hover:bg-white/[0.07] hover:text-white"
             >
               <FiX size={15} />
             </button>
           </div>
 
-          {/* Mini stats row */}
-          <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-            {expertN > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", background: "rgba(110,231,183,0.08)", border: "1px solid rgba(110,231,183,0.2)" }}>
-                <FiStar size={9} color="#6EE7B7" />
-                <span style={{ fontFamily: P.mono, fontSize: 8.5, color: "#6EE7B7", opacity: 0.9 }}>{expertN} expert</span>
-              </div>
-            )}
-            {profN > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", background: "rgba(129,140,248,0.08)", border: "1px solid rgba(129,140,248,0.2)" }}>
-                <span style={{ fontFamily: P.mono, fontSize: 8.5, color: "#818CF8", opacity: 0.9 }}>{profN} proficient</span>
-              </div>
-            )}
-            {familiarN > 0 && (
-              <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "4px 8px", background: "rgba(252,211,77,0.08)", border: "1px solid rgba(252,211,77,0.2)" }}>
-                <span style={{ fontFamily: P.mono, fontSize: 8.5, color: "#FCD34D", opacity: 0.9 }}>{familiarN} familiar</span>
-              </div>
+          <div className="mt-5 flex flex-wrap gap-2">
+            {(["expert", "proficient", "familiar"] as SkillLevel[]).map((level) =>
+              counts[level] ? (
+                <span
+                  key={level}
+                  className="rounded-lg border px-2.5 py-1 font-mono text-[8px] uppercase tracking-[0.12em]"
+                  style={{
+                    color: LEVEL_META[level].color,
+                    borderColor: `${LEVEL_META[level].color}25`,
+                    background: `${LEVEL_META[level].color}08`,
+                  }}
+                >
+                  {counts[level]} {LEVEL_META[level].label.toLowerCase()}
+                </span>
+              ) : null
             )}
           </div>
 
-          {/* Panel search */}
-          {cat.skills.length > 5 && (
-            <div style={{ marginTop: 14, position: "relative", display: "flex", alignItems: "center", gap: 8 }}>
-              <FiSearch size={12} color="rgba(255,255,255,0.25)" style={{ position: "absolute", left: 10 }} />
+          {category.skills.length > 5 && (
+            <div className="relative mt-4">
+              <FiSearch
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-white/20"
+                size={12}
+              />
               <input
-                value={panelSearch}
-                onChange={(e) => setPanelSearch(e.target.value)}
-                placeholder={`Filter ${cat.label} skills…`}
-                style={{
-                  width: "100%", paddingLeft: 30, paddingRight: 10, height: 32,
-                  background: "rgba(255,255,255,0.03)",
-                  border: `1px solid ${P.border}`,
-                  fontFamily: P.mono, fontSize: 10.5, color: P.cream, outline: "none",
-                  caretColor: cat.color,
-                }}
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder={`Filter ${category.label} skills...`}
+                autoFocus
+                className="h-10 w-full rounded-lg border border-white/[0.08] bg-black/20 pl-9 pr-3 font-mono text-[10px] text-white outline-none placeholder:text-white/20 focus:border-white/15"
               />
             </div>
           )}
         </div>
 
-        {/* Skills grid — scrollable */}
-        <div style={{
-          overflowY: "auto", padding: "20px 28px 24px",
-          flex: 1,
-        }}>
-          <AnimatePresence mode="popLayout">
-            {filtered.length === 0 ? (
-              <motion.p
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                style={{ fontFamily: P.mono, fontSize: 10, color: P.cream, opacity: 0.3, textAlign: "center", padding: "24px 0" }}
-              >
-                No skills match "{panelSearch}"
-              </motion.p>
-            ) : (
-              <motion.div
-                key="grid"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(auto-fill, minmax(155px, 1fr))",
-                  gap: 8,
-                }}
-              >
-                {filtered.map((skill, i) => {
-                  const Icon = skill.icon ?? FiCode;
-                  return (
-                    <motion.div
-                      key={skill.name}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.04, duration: 0.3, ease: EASE }}
-                      style={{
-                        padding: "12px 14px",
-                        background: `${cat.color}08`,
-                        border: `1px solid ${cat.color}18`,
-                        display: "flex", flexDirection: "column", gap: 8,
-                        position: "relative", overflow: "hidden",
-                      }}
-                    >
-                      {/* Subtle corner accent for expert */}
-                      {skill.level === "expert" && (
-                        <div style={{
-                          position: "absolute", top: 0, right: 0,
-                          width: 0, height: 0,
-                          borderStyle: "solid",
-                          borderWidth: "0 14px 14px 0",
-                          borderColor: `transparent ${cat.color}60 transparent transparent`,
-                        }} />
-                      )}
-                      <Icon size={16} color={cat.color} />
-                      <p style={{ fontFamily: P.mono, fontSize: 11, color: P.cream, opacity: 0.85, lineHeight: 1.3 }}>
+        <div className="min-h-0 flex-1 overflow-y-auto p-4 sm:p-5">
+          {filtered.length === 0 ? (
+            <div className="py-14 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-white/25">
+              No matching skills
+            </div>
+          ) : (
+            <div className="grid gap-2 sm:grid-cols-2">
+              {filtered.map((skill, index) => {
+                const SkillIcon = skill.icon ?? FiCode;
+
+                return (
+                  <motion.div
+                    key={skill.name}
+                    initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: reduceMotion ? 0 : index * 0.025,
+                      duration: 0.3,
+                    }}
+                    className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"
+                  >
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="flex h-9 w-9 items-center justify-center rounded-lg"
+                        style={{
+                          color: category.color,
+                          background: `${category.color}0c`,
+                        }}
+                      >
+                        <SkillIcon size={15} />
+                      </span>
+                      <span className="font-mono text-[10px] leading-4 text-white/65">
                         {skill.name}
-                      </p>
-                      {skill.level && <ProficiencyBar level={skill.level} color={cat.color} />}
-                    </motion.div>
-                  );
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                      </span>
+                    </div>
+                    {skill.level && <ProficiencyBar level={skill.level} />}
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Footer */}
-        <div style={{
-          borderTop: `1px solid ${P.border}`,
-          padding: "10px 28px",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          flexShrink: 0,
-        }}>
-          <span style={{ fontFamily: P.mono, fontSize: 8.5, letterSpacing: "0.16em", textTransform: "uppercase", color: P.cream, opacity: 0.18 }}>
-            {panelSearch ? `${filtered.length} of ${cat.skills.length}` : `${cat.skills.length} skills`}
+        <div className="flex items-center justify-between border-t border-white/[0.07] px-5 py-3">
+          <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-white/20">
+            {query ? `${filtered.length} / ${category.skills.length} skills` : `${category.skills.length} skills`}
           </span>
           <button
+            type="button"
             onClick={onClose}
-            style={{
-              background: "transparent", border: `1px solid ${P.border}`,
-              fontFamily: P.mono, fontSize: 9, letterSpacing: "0.14em", textTransform: "uppercase",
-              color: P.cream, opacity: 0.35, cursor: "pointer", padding: "4px 10px",
-              transition: "opacity 0.15s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.7")}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.35")}
+            className="font-mono text-[8px] uppercase tracking-[0.16em] text-white/30 transition-colors hover:text-white/70"
           >
             ESC · Close
           </button>
@@ -571,172 +599,115 @@ function SkillPanel({ cat, onClose }: { cat: Category; onClose: () => void }) {
   );
 }
 
-// ─── Marquee Tile ─────────────────────────────────────────────────────────────
-
 function MarqueeTile({
-  cat, onClick, onHoverChange,
+  category,
+  onOpen,
+  reduceMotion,
 }: {
-  cat: Category; onClick: () => void; onHoverChange: (h: boolean) => void;
+  category: Category;
+  onOpen: (category: Category) => void;
+  reduceMotion: boolean;
 }) {
-  const [hovered, setHovered] = useState(false);
-  const Icon = cat.filterIcon;
-  const expertCount = cat.skills.filter(s => s.level === "expert").length;
-
-  const setH = (v: boolean) => { setHovered(v); onHoverChange(v); };
+  const Icon = category.filterIcon;
 
   return (
-    <button
-      onClick={onClick}
-      onMouseEnter={() => setH(true)}
-      onMouseLeave={() => setH(false)}
-      style={{
-        flexShrink: 0,
-        width: 178, height: 62,
-        margin: "0 6px",
-        background: hovered ? `${cat.color}14` : "rgba(255,255,255,0.025)",
-        border: `1px solid ${hovered ? cat.color + "50" : P.border}`,
-        display: "flex", alignItems: "center", gap: 10,
-        padding: "0 14px",
-        cursor: "pointer",
-        position: "relative", overflow: "hidden",
-        transform: hovered ? "translateY(-3px)" : "translateY(0)",
-        transition: "background 0.18s, border-color 0.18s, transform 0.2s, box-shadow 0.2s",
-        boxShadow: hovered ? `0 8px 24px ${cat.color}18` : "none",
-      }}
+    <motion.button
+      type="button"
+      onClick={() => onOpen(category)}
+      whileHover={reduceMotion ? undefined : { y: -3 }}
+      className="group mx-1.5 flex h-16 w-[180px] shrink-0 items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.025] px-4 text-left transition-colors hover:border-white/[0.14] hover:bg-white/[0.045]"
     >
-      {hovered && (
-        <div style={{
-          position: "absolute", inset: 0,
-          background: `radial-gradient(ellipse at 20% 50%, ${cat.glowColor}, transparent 65%)`,
-          pointerEvents: "none",
-        }} />
-      )}
-
-      {/* Top highlight line */}
-      <motion.div
-        animate={{ scaleX: hovered ? 1 : 0 }}
-        initial={{ scaleX: 0 }}
+      <span
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border"
         style={{
-          position: "absolute", top: 0, left: 0, right: 0,
-          height: 1, background: cat.color, transformOrigin: "left",
+          color: category.color,
+          borderColor: `${category.color}22`,
+          background: `${category.color}09`,
         }}
-        transition={{ duration: 0.22 }}
-      />
-
-      <div style={{
-        width: 32, height: 32, flexShrink: 0,
-        display: "flex", alignItems: "center", justifyContent: "center",
-        background: hovered ? `${cat.color}18` : "rgba(255,255,255,0.04)",
-        border: `1px solid ${hovered ? cat.color + "35" : P.border}`,
-        transition: "background 0.18s, border-color 0.18s",
-      }}>
-        <Icon size={14} color={hovered ? cat.color : "rgba(255,255,255,0.4)"} />
-      </div>
-
-      <div style={{ display: "flex", flexDirection: "column", gap: 3, position: "relative", minWidth: 0 }}>
-        <span style={{
-          fontFamily: P.mono, fontSize: 10.5, letterSpacing: "0.08em",
-          textTransform: "uppercase",
-          color: hovered ? cat.color : "rgba(255,255,255,0.5)",
-          whiteSpace: "nowrap",
-          transition: "color 0.18s",
-        }}>
-          {cat.label}
+      >
+        <Icon size={14} />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate font-mono text-[10px] uppercase tracking-[0.08em] text-white/50 transition-colors group-hover:text-white/80">
+          {category.label}
         </span>
-        <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-          <span style={{
-            fontFamily: P.mono, fontSize: 8.5,
-            color: P.cream, opacity: hovered ? 0.4 : 0.2,
-            whiteSpace: "nowrap",
-          }}>
-            {cat.skills.length} skills
-          </span>
-          {expertCount > 0 && (
-            <span style={{
-              fontFamily: P.mono, fontSize: 8,
-              color: "#6EE7B7", opacity: hovered ? 0.7 : 0.3,
-              whiteSpace: "nowrap",
-            }}>
-              · {expertCount} expert
-            </span>
-          )}
-        </div>
-      </div>
-
+        <span className="mt-1 block font-mono text-[8px] text-white/20">
+          {category.skills.length} skills
+        </span>
+      </span>
       <FiChevronRight
-        size={11}
-        style={{
-          marginLeft: "auto", flexShrink: 0,
-          color: cat.color,
-          opacity: hovered ? 0.7 : 0,
-          transition: "opacity 0.18s",
-          position: "relative",
-        }}
+        className="ml-auto shrink-0 text-white/10 transition-colors group-hover:text-primary/60"
+        size={12}
       />
-    </button>
+    </motion.button>
   );
 }
 
-// ─── Marquee Row ──────────────────────────────────────────────────────────────
-
 function MarqueeRow({
-  catIds, duration, direction, maxWidth, globalPaused, onNodeClick,
+  catIds,
+  duration,
+  direction,
+  paused,
+  onOpen,
+  reduceMotion,
 }: {
-  catIds: string[]; duration: number; direction: 1 | -1; maxWidth: number;
-  globalPaused: boolean;
-  onNodeClick: (cat: Category) => void;
+  catIds: string[];
+  duration: number;
+  direction: 1 | -1;
+  paused: boolean;
+  onOpen: (category: Category) => void;
+  reduceMotion: boolean;
 }) {
-  const [rowHovered, setRowHovered] = useState(false);
-  const rowCats = catIds.map((id) => categories.find((c) => c.id === id)!).filter(Boolean);
-  const paused = globalPaused || rowHovered;
-
-  const [offset, setOffset] = useState(0);
-  const rafRef  = useRef<number | null>(null);
+  const [progress, setProgress] = useState(0);
+  const rafRef = useRef<number | null>(null);
   const lastRef = useRef<number | null>(null);
 
+  const rowCategories = catIds
+    .map((id) => categories.find((category) => category.id === id))
+    .filter((category): category is Category => Boolean(category));
+
   useEffect(() => {
-    if (paused) {
+    if (paused || reduceMotion) {
       lastRef.current = null;
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
       return;
     }
-    const tick = (ts: number) => {
+
+    const tick = (timestamp: number) => {
       if (lastRef.current !== null) {
-        const dt = ts - lastRef.current;
-        setOffset((prev) => (prev + dt / (duration * 1000)) % 1);
+        const delta = timestamp - lastRef.current;
+        setProgress((current) => (current + delta / (duration * 1000)) % 1);
       }
-      lastRef.current = ts;
+      lastRef.current = timestamp;
       rafRef.current = requestAnimationFrame(tick);
     };
-    rafRef.current = requestAnimationFrame(tick);
-    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [paused, duration]);
 
-  const xPercent = direction === 1 ? -offset * 50 : -50 + offset * 50;
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+    };
+  }, [duration, paused, reduceMotion]);
+
+  const x = direction === 1 ? -progress * 50 : -50 + progress * 50;
 
   return (
     <div
+      className="relative overflow-hidden"
       style={{
-        position: "relative", overflow: "hidden",
-        width: "100%", maxWidth, margin: "0 auto",
         maskImage: "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
         WebkitMaskImage: "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
       }}
     >
-      <div
-        style={{
-          display: "flex", width: "max-content",
-          transform: `translateX(${xPercent}%)`,
-        }}
-      >
-        {[0, 1].map((dup) => (
-          <div key={dup} style={{ display: "flex" }} aria-hidden={dup === 1 ? true : undefined}>
-            {rowCats.map((cat) => (
+      <div className="flex w-max" style={{ transform: `translateX(${x}%)` }}>
+        {[0, 1].map((duplicate) => (
+          <div key={duplicate} className="flex" aria-hidden={duplicate === 1}>
+            {rowCategories.map((category) => (
               <MarqueeTile
-                key={`${dup}-${cat.id}`}
-                cat={cat}
-                onClick={() => onNodeClick(cat)}
-                onHoverChange={setRowHovered}
+                key={`${duplicate}-${category.id}`}
+                category={category}
+                onOpen={onOpen}
+                reduceMotion={reduceMotion}
               />
             ))}
           </div>
@@ -746,198 +717,171 @@ function MarqueeRow({
   );
 }
 
-// ─── Category Grid (filterable index) ────────────────────────────────────────
-
-function CategoryGrid({
-  query, onOpen,
-}: {
-  query: string;
-  onOpen: (cat: Category) => void;
-}) {
-  const filtered = useMemo(() => {
-    if (!query.trim()) return categories;
-    const q = query.toLowerCase();
-    return categories.filter(c =>
-      c.label.toLowerCase().includes(q) ||
-      c.skills.some(s => s.name.toLowerCase().includes(q))
-    );
-  }, [query]);
-
-  return (
-    <AnimatePresence mode="popLayout">
-      <motion.div
-        key={query ? "filtered" : "all"}
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(190px, 1fr))",
-          gap: 1,
-          borderTop: `1px solid ${P.border}`,
-        }}
-      >
-        {filtered.map((cat, i) => {
-          const Icon = cat.filterIcon;
-          const matchedSkills = query.trim()
-            ? cat.skills.filter(s => s.name.toLowerCase().includes(query.toLowerCase()))
-            : [];
-
-          return (
-            <motion.button
-              key={cat.id}
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 4 }}
-              transition={{ delay: i * 0.02, duration: 0.25, ease: EASE }}
-              onClick={() => onOpen(cat)}
-              style={{
-                background: "transparent", border: "none",
-                borderBottom: `1px solid ${P.border}`, borderRight: `1px solid ${P.border}`,
-                padding: "13px 16px",
-                display: "flex", alignItems: "center", gap: 10,
-                cursor: "pointer", textAlign: "left",
-                transition: "background 0.15s",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = `${cat.color}08`;
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-              }}
-            >
-              <Icon size={12} color={cat.color} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <span style={{
-                  fontFamily: P.mono, fontSize: 10, letterSpacing: "0.1em",
-                  textTransform: "uppercase", color: P.cream, opacity: 0.55,
-                  display: "block",
-                }}>
-                  {cat.label}
-                </span>
-                {matchedSkills.length > 0 && (
-                  <span style={{
-                    fontFamily: P.mono, fontSize: 8.5, color: cat.color, opacity: 0.7,
-                    display: "block", marginTop: 2,
-                  }}>
-                    {matchedSkills.map(s => s.name).slice(0, 2).join(", ")}
-                    {matchedSkills.length > 2 && ` +${matchedSkills.length - 2}`}
-                  </span>
-                )}
-              </div>
-              <span style={{
-                fontFamily: P.mono, fontSize: 9, color: cat.color, opacity: 0.45, flexShrink: 0,
-              }}>
-                {cat.skills.length}
-              </span>
-            </motion.button>
-          );
-        })}
-      </motion.div>
-    </AnimatePresence>
-  );
-}
-
-// ─── Main Skills Section ──────────────────────────────────────────────────────
-
 const Skills = () => {
   const [selected, setSelected] = useState<Category | null>(null);
-  const [paused,   setPaused]   = useState(false);
-  const [search,   setSearch]   = useState("");
-  const shouldReduceMotion = useReducedMotion();
+  const [paused, setPaused] = useState(false);
+  const [search, setSearch] = useState("");
+  const reduceMotion = Boolean(useReducedMotion());
 
-  const handleOpen  = useCallback((cat: Category) => { setSelected(cat); setPaused(true);  }, []);
-  const handleClose = useCallback(() =>               { setSelected(null); setPaused(false); }, []);
-  const clearSearch = useCallback(() => setSearch(""), []);
+  const openCategory = useCallback((category: Category) => {
+    setSelected(category);
+    setPaused(true);
+  }, []);
+
+  const closeCategory = useCallback(() => {
+    setSelected(null);
+    setPaused(false);
+  }, []);
+
+  const filteredCategories = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    if (!query) return categories;
+
+    return categories.filter(
+      (category) =>
+        category.label.toLowerCase().includes(query) ||
+        category.skills.some((skill) => skill.name.toLowerCase().includes(query))
+    );
+  }, [search]);
 
   return (
-    <section id="skills" style={{ padding: "120px 0", background: P.bg, color: P.cream }}>
-      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 48px" }}>
+    <section
+      id="skills"
+      className="relative overflow-hidden bg-[#07080d] py-24 text-foreground sm:py-32"
+    >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[720px] -translate-x-1/2 rounded-full bg-primary/[0.045] blur-[140px]"
+      />
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 opacity-[0.025]"
+        style={{
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.35) 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+        }}
+      />
 
+      <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading
           index="02"
           eyebrow="Capabilities"
-          title={<>The tools I shape <em className="italic gradient-text">ideas</em> with.</>}
-          description="A broad engineering stack — from frontend interfaces to mobile apps, data analysis, and cloud-ready backends."
+          title={
+            <>
+              The tools I shape <em className="gradient-text italic">ideas</em> with.
+            </>
+          }
+          description="A practical engineering stack spanning product interfaces, APIs, data, mobile, cloud tooling, testing, and AI-assisted development."
         />
 
-        {/* ── Stats row ── */}
         <motion.div
-          initial={{ opacity: 0, y: 16 }}
+          initial={{ opacity: 0, y: 18 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5, ease: EASE }}
-          style={{ display: "flex", gap: 8, marginBottom: 40, flexWrap: "wrap" }}
+          transition={{ duration: 0.6, ease: EASE }}
+          className="mb-10 grid grid-cols-2 gap-2 sm:grid-cols-4"
         >
-          <StatPill value={totalSkills} label="Total Skills"     color="#818CF8" />
-          <StatPill value={categories.length} label="Domains"   color="#6EE7B7" />
-          <StatPill value={expertCount} label="Expert Level"     color="#FCD34D" />
-          <StatPill value="6+"          label="Years Building"   color="#C4B5FD" />
+          <StatCard value={totalSkills} label="Total skills" accent="#818CF8" />
+          <StatCard value={categories.length} label="Skill domains" accent="#6EE7B7" />
+          <StatCard value={expertCount} label="Expert level" accent="#FCD34D" />
+          <StatCard value="6+" label="Years building" accent="#C4B5FD" />
         </motion.div>
 
-        {/* ── Search + Legend row ── */}
-        <div style={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          gap: 16, marginBottom: 24, flexWrap: "wrap",
-        }}>
-          <SearchBar value={search} onChange={setSearch} onClear={clearSearch} />
+        <div className="mb-5 flex flex-col gap-4 border-y border-white/[0.06] py-4 sm:flex-row sm:items-center sm:justify-between">
+          <SearchBar
+            value={search}
+            onChange={setSearch}
+            onClear={() => setSearch("")}
+          />
           <LevelLegend />
         </div>
 
-        {/* ── Marquee (hidden when searching) ── */}
-        <AnimatePresence>
+        <AnimatePresence initial={false}>
           {!search && (
             <motion.div
               initial={{ opacity: 1 }}
               exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.25 }}
+              className="mb-10 overflow-hidden"
             >
               <div
-                style={{
-                  display: "flex", flexDirection: "column", gap: 14,
-                  padding: "20px 0 28px",
-                }}
+                className="space-y-2 py-4"
                 onMouseEnter={() => setPaused(true)}
                 onMouseLeave={() => !selected && setPaused(false)}
               >
-                {ROWS.map((row, i) => (
+                {ROWS.map((row, index) => (
                   <MarqueeRow
-                    key={i}
+                    key={index}
                     catIds={row.catIds}
-                    duration={shouldReduceMotion ? 99999 : row.duration}
+                    duration={row.duration}
                     direction={row.direction}
-                    maxWidth={row.maxWidth}
-                    globalPaused={paused}
-                    onNodeClick={handleOpen}
+                    paused={paused}
+                    onOpen={openCategory}
+                    reduceMotion={reduceMotion}
                   />
                 ))}
               </div>
 
-              <p style={{
-                textAlign: "center", fontFamily: P.mono, fontSize: 8.5,
-                letterSpacing: "0.2em", textTransform: "uppercase",
-                color: P.cream, opacity: 0.16, marginBottom: 32,
-                pointerEvents: "none",
-              }}>
-                {paused ? "click a tile to explore" : "hover to pause · click to explore"}
+              <p className="text-center font-mono text-[8px] uppercase tracking-[0.22em] text-white/15">
+                {reduceMotion
+                  ? "Select a domain to explore"
+                  : paused
+                    ? "Click a domain to explore"
+                    : "Hover to pause · click to explore"}
               </p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* ── Category index (filterable) ── */}
-        <CategoryGrid query={search} onOpen={handleOpen} />
+        <div className="mb-4 flex items-center justify-between">
+          <p className="font-mono text-[9px] uppercase tracking-[0.22em] text-white/20">
+            {search ? `Matching domains · ${filteredCategories.length}` : "Skill index"}
+          </p>
+          <span className="hidden font-mono text-[8px] uppercase tracking-[0.16em] text-white/15 sm:block">
+            Select a card for detail
+          </span>
+        </div>
 
-        {/* ── Footer stat ── */}
-        <div style={{ marginTop: 40, display: "flex", alignItems: "center", justifyContent: "center", gap: 16 }}>
-          <span style={{ height: 1, width: 48, background: P.border }} />
-          <p style={{ fontFamily: P.mono, fontSize: 9, letterSpacing: "0.24em", textTransform: "uppercase", color: P.cream, opacity: 0.18 }}>
+        <AnimatePresence mode="popLayout">
+          <motion.div
+            key={search ? "filtered" : "all"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {filteredCategories.map((category, index) => (
+              <CategoryCard
+                key={category.id}
+                category={category}
+                index={index}
+                onOpen={openCategory}
+              />
+            ))}
+          </motion.div>
+        </AnimatePresence>
+
+        {filteredCategories.length === 0 && (
+          <div className="rounded-2xl border border-dashed border-white/[0.08] py-16 text-center">
+            <FiSearch className="mx-auto mb-3 text-white/15" size={20} />
+            <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-white/25">
+              No skills match “{search}”
+            </p>
+          </div>
+        )}
+
+        <div className="mt-10 flex items-center justify-center gap-4">
+          <span className="h-px w-12 bg-white/[0.07]" />
+          <p className="font-mono text-[8px] uppercase tracking-[0.24em] text-white/15">
             {totalSkills} skills · {categories.length} domains
           </p>
-          <span style={{ height: 1, width: 48, background: P.border }} />
+          <span className="h-px w-12 bg-white/[0.07]" />
         </div>
       </div>
 
-      {/* ── Detail panel ── */}
       <AnimatePresence>
-        {selected && <SkillPanel cat={selected} onClose={handleClose} />}
+        {selected && <SkillPanel category={selected} onClose={closeCategory} />}
       </AnimatePresence>
     </section>
   );

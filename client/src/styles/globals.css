@@ -102,6 +102,15 @@
 
   --color-glow:
     var(--glow);
+
+  --color-footer:
+    var(--bg-footer);
+
+  --color-parchment:
+    var(--parchment);
+
+  --color-gold:
+    var(--gold);
 }
 
 /* =====================================================
@@ -114,11 +123,14 @@
   /* Palette */
   --bg-base: #0f172a;
   --bg-slate: #111827;
+  --bg-footer: #0a0806;
 
   --blue-soft: #9fb3df;
   --blue-light: #9ec6f3;
   --ice: #bddde4;
   --cream: #fff1d5;
+  --parchment: #ede0cc;
+  --gold: #d4a254;
 
   /* Semantic */
   --background:
@@ -179,7 +191,7 @@
   --muted-foreground:
     color-mix(
       in oklab,
-      var(--cream) 65%,
+      var(--parchment) 65%,
       transparent
     );
 
@@ -256,6 +268,17 @@
       #fff1d5 0%,
       #bddde4 45%,
       #9ec6f3 100%
+    );
+
+  --gradient-footer-glow:
+    radial-gradient(
+      ellipse,
+      color-mix(
+        in oklab,
+        var(--blue-light) 6%,
+        transparent
+      ) 0%,
+      transparent 70%
     );
 
   /* Shadows */
@@ -501,6 +524,16 @@
         var(--cream) 9%,
         transparent
       );
+  }
+
+  .bg-footer-section {
+    background:
+      var(--bg-footer);
+  }
+
+  .text-gold-icon {
+    color:
+      var(--gold);
   }
 }
 

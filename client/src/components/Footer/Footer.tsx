@@ -1,37 +1,64 @@
-import React, { useState, useCallback } from "react";
-import { motion, useScroll } from "framer-motion";
-import { FiArrowUp, FiGithub, FiLinkedin, FiTwitter, FiMail, FiMapPin, FiClock, FiFigma } from "react-icons/fi";
+import React, { useEffect, useState } from "react";
+import { motion, useReducedMotion, useScroll } from "framer-motion";
+import {
+  FiArrowUp,
+  FiGithub,
+  FiLinkedin,
+  FiMail,
+  FiMapPin,
+  FiClock,
+  FiFigma,
+  FiArrowUpRight,
+  FiHeart,
+} from "react-icons/fi";
 import { SiWhatsapp } from "react-icons/si";
 
-// Types
 interface SocialLinkProps {
   Icon: React.ElementType;
   href: string;
   label: string;
 }
+
 interface NavLinkProps {
   label: string;
   href: string;
 }
-interface ScrollRingProps {
-  onClick: () => void;
-}
 
-// Constants
 const EMAIL = "rasingollasaranga35@gmail.com";
 
 const SOCIALS: SocialLinkProps[] = [
-  { Icon: FiGithub, href: "https://github.com/saranga423", label: "GitHub" },
-  { Icon: FiLinkedin, href: "https://www.linkedin.com/in/saranga-rasingolla-2a6287249/", label: "LinkedIn" },
-  { Icon: FiFigma, href: "https://www.figma.com/design/1Ztnoqf3BdIWeFx5auJtC1/SARANGA-RASINGOLLA?node-id=0-1&t=es4NbOk5z90BWbag-00", label: "Figma" },
-  { Icon: FiMail, href: `mailto:${EMAIL}`, label: "Email" },
-  { Icon: SiWhatsapp, href: "https://wa.me/94703572917", label: "WhatsApp" },
+  {
+    Icon: FiGithub,
+    href: "https://github.com/saranga423",
+    label: "GitHub",
+  },
+  {
+    Icon: FiLinkedin,
+    href: "https://www.linkedin.com/in/saranga-rasingolla-2a6287249/",
+    label: "LinkedIn",
+  },
+  {
+    Icon: FiFigma,
+    href: "https://www.figma.com/design/1Ztnoqf3BdIWeFx5auJtC1/SARANGA-RASINGOLLA?node-id=0-1&t=es4NbOk5z90BWbag-00",
+    label: "Figma",
+  },
+  {
+    Icon: FiMail,
+    href: `mailto:${EMAIL}`,
+    label: "Email",
+  },
+  {
+    Icon: SiWhatsapp,
+    href: "https://wa.me/94703572917",
+    label: "WhatsApp",
+  },
 ];
 
 const NAV_LINKS: NavLinkProps[] = [
   { label: "Work", href: "#projects" },
   { label: "About", href: "#about" },
   { label: "Skills", href: "#skills" },
+  { label: "Certificates", href: "#certificates" },
   { label: "Contact", href: "#contact" },
 ];
 
@@ -40,525 +67,346 @@ const MARQUEE_ITEMS = [
   "full-stack engineer",
   "React · Node.js · TypeScript",
   "Colombo · Sri Lanka",
-  "Open to Remote",
-  "2026 Engagements",
+  "open to remote",
+  "2026 engagements",
 ];
 
-// Components
+function LiveClock() {
+  const [time, setTime] = useState("");
 
-// Live Clock Component
-const LiveClock: React.FC = () => {
-  const [time, setTime] = React.useState<string>("");
-
-  React.useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const istTime = now.toLocaleString("en-US", {
-        timeZone: "Asia/Kolkata",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: true,
-      });
-      setTime(istTime);
+  useEffect(() => {
+    const update = () => {
+      setTime(
+        new Intl.DateTimeFormat("en-US", {
+          timeZone: "Asia/Colombo",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        }).format(new Date())
+      );
     };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+
+    update();
+    const interval = window.setInterval(update, 1000);
+
+    return () => window.clearInterval(interval);
   }, []);
 
-  return (
-    <span style={{
-      fontFamily: "Courier New, monospace",
-      fontSize: 10,
-      letterSpacing: "0.15em",
-      color: "rgba(237,224,204,0.55)",
-    }}>
-      {time || "Loading..."}
-    </span>
-  );
-};
+  return <span>{time || "Loading…"}</span>;
+}
 
-// Scroll to Top Button with appearance control
-const ScrollRing: React.FC<ScrollRingProps> = ({ onClick }) => {
-  const { scrollYProgress } = useScroll();
-  const radius = 22;
-  const circumference = 2 * Math.PI * radius;
-  const [isVisible, setIsVisible] = useState(false);
-
-  // Show button after scrolling down 300px
-  React.useEffect(() => {
-    const handleScroll = () => {
-      setIsVisible(window.scrollY > 300);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Calculate stroke offset
-  const strokeOffset = circumference - scrollYProgress.get() * circumference;
-
-  if (!isVisible) return null;
+function MarqueeStrip() {
+  const reduceMotion = useReducedMotion();
+  const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
 
   return (
-    <motion.button
-      aria-label="Back to top"
-      onClick={onClick}
-      whileHover={{ scale: 1.08 }}
-      style={{
-        position: "fixed",
-        bottom: 40,
-        right: 40,
-        width: 56,
-        height: 56,
-        background: "none",
-        border: "none",
-        cursor: "pointer",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        zIndex: 999,
-      }}
-    >
-      <svg
-        width={56}
-        height={56}
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          transform: "rotate(-90deg)",
-        }}
-      >
-        {/* Track */}
-        <circle
-          cx={28}
-          cy={28}
-          r={radius}
-          fill="none"
-          stroke="rgba(237,224,204,0.08)"
-          strokeWidth={1.5}
-        />
-        {/* Progress */}
-        <circle
-          cx={28}
-          cy={28}
-          r={radius}
-          fill="none"
-          stroke="#9EC6F3"
-          strokeWidth={1.5}
-          strokeDasharray={circumference}
-          strokeDashoffset={strokeOffset}
-          strokeLinecap="round"
-          style={{ transition: "stroke-dashoffset 0.2s linear" }}
-        />
-      </svg>
+    <div className="relative overflow-hidden border-y border-white/[0.06]">
+      <div className="absolute inset-y-0 left-0 z-10 w-16 bg-gradient-to-r from-[#07080d] to-transparent sm:w-28" />
+      <div className="absolute inset-y-0 right-0 z-10 w-16 bg-gradient-to-l from-[#07080d] to-transparent sm:w-28" />
+
       <motion.div
-        animate={{ y: [0, -3, 0] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-        style={{ color: "#9EC6F3" }}
+        className="flex w-max py-3.5"
+        animate={reduceMotion ? { x: 0 } : { x: ["0%", "-50%"] }}
+        transition={
+          reduceMotion
+            ? undefined
+            : {
+                duration: 26,
+                repeat: Infinity,
+                ease: "linear",
+              }
+        }
       >
-        <FiArrowUp size={16} />
-      </motion.div>
-    </motion.button>
-  );
-};
-
-// Marquee component with seamless loop
-const MarqueeStrip: React.FC = () => {
-  const items = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS]; // double for seamless loop
-  return (
-    <div
-      style={{
-        overflow: "hidden",
-        borderTop: "1px solid rgba(237,224,204,0.07)",
-        borderBottom: "1px solid rgba(237,224,204,0.07)",
-        padding: "11px 0",
-        position: "relative",
-      }}
-    >
-      {/* Fade edges for overlay effect */}
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: 80,
-          background:
-            "linear-gradient(to right, #0E0C0A, transparent)",
-          zIndex: 2,
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          right: 0,
-          top: 0,
-          bottom: 0,
-          width: 80,
-          background:
-            "linear-gradient(to left, #0E0C0A, transparent)",
-          zIndex: 2,
-          pointerEvents: "none",
-        }}
-      />
-      {/* Moving marquee */}
-      <motion.div
-        animate={{ x: ["0%", "-50%"] }}
-        transition={{ duration: 22, repeat: Infinity, ease: "linear" }}
-        style={{
-          display: "flex",
-          whiteSpace: "nowrap",
-        }}
-      >
-        {items.map((item, i) => (
-          <span key={i} style={{ display: "inline-flex", alignItems: "center" }}>
-            <span
-              style={{
-                fontFamily: "Courier New, monospace",
-                fontSize: 10,
-                letterSpacing: "0.3em",
-                textTransform: "uppercase",
-                color: "rgba(237,224,204,0.28)",
-                padding: "0 32px",
-              }}
-            >
+        {items.map((item, index) => (
+          <React.Fragment key={`${item}-${index}`}>
+            <span className="px-6 font-mono text-[9px] uppercase tracking-[0.24em] text-white/25 sm:px-8">
               {item}
             </span>
-            <span style={{ color: "#9EC6F3", fontSize: 8, opacity: 0.5 }}>◆</span>
-          </span>
+            <span className="flex items-center text-[7px] text-primary/60">
+              ◆
+            </span>
+          </React.Fragment>
         ))}
       </motion.div>
     </div>
   );
-};
+}
 
-// Main Footer Component
-export function Footer() {
-  const handleScrollToTop = () => window.scrollTo({ top: 0, behavior: "smooth" });
+function SocialIcon({ Icon, href, label }: SocialLinkProps) {
+  return (
+    <motion.a
+      href={href}
+      aria-label={label}
+      title={label}
+      target={href.startsWith("mailto:") ? undefined : "_blank"}
+      rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+      whileHover={{ y: -4 }}
+      whileTap={{ scale: 0.95 }}
+      className="group flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.025] text-white/35 transition-colors hover:border-primary/30 hover:bg-primary/[0.07] hover:text-primary"
+    >
+      <Icon size={15} />
+    </motion.a>
+  );
+}
+
+function FooterNavigation() {
+  return (
+    <div>
+      <p className="mb-5 font-mono text-[9px] uppercase tracking-[0.22em] text-white/25">
+        Navigation
+      </p>
+
+      <nav className="grid grid-cols-2 gap-x-8 gap-y-3 sm:grid-cols-1">
+        {NAV_LINKS.map(({ label, href }, index) => (
+          <motion.a
+            key={label}
+            href={href}
+            whileHover={{ x: 4 }}
+            className="group flex items-center gap-2 text-sm text-white/40 transition-colors hover:text-white/80"
+          >
+            <span className="font-mono text-[8px] text-white/15 group-hover:text-primary/60">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span>{label}</span>
+            <FiArrowUpRight
+              size={11}
+              className="opacity-0 transition-opacity group-hover:opacity-60"
+            />
+          </motion.a>
+        ))}
+      </nav>
+    </div>
+  );
+}
+
+function ContactBlock() {
+  return (
+    <div>
+      <p className="mb-5 font-mono text-[9px] uppercase tracking-[0.22em] text-white/25">
+        Start a conversation
+      </p>
+
+      <a
+        href={`mailto:${EMAIL}`}
+        className="group inline-flex max-w-full items-center gap-2 text-sm text-white/55 transition-colors hover:text-primary"
+      >
+        <FiMail size={14} className="shrink-0" />
+        <span className="break-all">{EMAIL}</span>
+        <FiArrowUpRight
+          size={12}
+          className="shrink-0 opacity-30 transition-all group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-hover:opacity-80"
+        />
+      </a>
+
+      <p className="mt-4 max-w-xs text-xs leading-5 text-white/25">
+        Available for freelance, contract, and full-time opportunities.
+      </p>
+
+      <div className="mt-5 flex items-center gap-2">
+        <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+        <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-emerald-300/60">
+          Currently available
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function LocationBlock() {
+  return (
+    <div>
+      <p className="mb-5 font-mono text-[9px] uppercase tracking-[0.22em] text-white/25">
+        Location
+      </p>
+
+      <div className="space-y-4">
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/[0.07] text-primary/70">
+            <FiMapPin size={12} />
+          </span>
+          <div>
+            <p className="text-sm text-white/55">Colombo, Sri Lanka</p>
+            <p className="mt-1 text-[10px] text-white/20">GMT+5:30</p>
+          </div>
+        </div>
+
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/[0.07] text-primary/70">
+            <FiClock size={12} />
+          </span>
+          <div>
+            <p className="font-mono text-sm text-white/55">
+              <LiveClock />
+            </p>
+            <p className="mt-1 text-[10px] text-white/20">Local time</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ScrollToTop() {
+  const { scrollYProgress } = useScroll();
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setVisible(window.scrollY > 350);
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  if (!visible) return null;
 
   return (
-    <footer style={{ position: "relative", background: "#0A0806", overflow: "hidden" }}>
-      {/* Ember glow background for aesthetic */}
-      <div
-        style={{
-          position: "absolute",
-          bottom: -100,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: 800,
-          height: 300,
-          background:
-            "radial-gradient(ellipse, rgba(158,198,243,0.06) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      {/* Top accent line */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 2,
-          background:
-            "linear-gradient(90deg, transparent 0%, #9EC6F3 40%, #BDDDE4 60%, transparent 100%)",
-          opacity: 0.6,
-        }}
-      />
-
-      {/* Marquee strip */}
-      <MarqueeStrip />
-
-      {/* Main Content Grid */}
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: "0 auto",
-          padding: "72px 48px 0",
-        }}
+    <motion.button
+      type="button"
+      aria-label="Back to top"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      whileHover={{ y: -4, scale: 1.04 }}
+      whileTap={{ scale: 0.95 }}
+      className="fixed bottom-5 right-5 z-[100] flex h-12 w-12 items-center justify-center rounded-full border border-primary/20 bg-[#0b0e15]/90 text-primary shadow-[0_10px_35px_rgba(0,0,0,.35)] backdrop-blur-xl sm:bottom-8 sm:right-8"
+    >
+      <svg
+        aria-hidden="true"
+        className="absolute inset-0 -rotate-90"
+        viewBox="0 0 48 48"
       >
-        {/* Headline & Call to Action */}
-        <AnimatedHeadline />
+        <circle
+          cx="24"
+          cy="24"
+          r="20"
+          fill="none"
+          stroke="rgba(255,255,255,.07)"
+          strokeWidth="1"
+        />
+        <motion.circle
+          cx="24"
+          cy="24"
+          r="20"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          pathLength={1}
+          style={{ pathLength: scrollYProgress }}
+        />
+      </svg>
 
-        {/* Info Sections: Contact, Navigation, Location & Socials */}
-        <InfoGrid />
+      <FiArrowUp size={16} />
+    </motion.button>
+  );
+}
+
+function FooterBottom() {
+  return (
+    <div className="flex flex-col gap-5 border-t border-white/[0.06] py-6 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
+        <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-white/20">
+          © 2026 Saranga Rasingolla
+        </span>
+
+        <span className="hidden h-3 w-px bg-white/10 sm:block" />
+
+        <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-white/15">
+          React · TypeScript · Modern Web
+        </span>
       </div>
 
-      {/* Bottom bar with copyright & back-to-top */}
-      <BottomBar onScrollToTop={handleScrollToTop} />
+      <div className="flex items-center gap-1.5 text-[9px] text-white/20">
+        Built with precision
+        <FiHeart size={9} className="text-primary/60" />
+      </div>
+    </div>
+  );
+}
+
+export function Footer() {
+  return (
+    <footer className="relative overflow-hidden bg-[#07080d] text-foreground">
+      {/* Ambient background */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-[-220px] left-1/2 h-[500px] w-[700px] -translate-x-1/2 rounded-full bg-primary/[0.055] blur-[150px]"
+      />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-0 h-px w-full bg-gradient-to-r from-transparent via-primary/50 to-transparent"
+      />
+
+      <MarqueeStrip />
+
+      <div className="relative mx-auto max-w-6xl px-5 sm:px-8">
+        {/* Main CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 35 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+          className="border-b border-white/[0.06] py-20 sm:py-28"
+        >
+          <p className="mb-5 font-mono text-[9px] uppercase tracking-[0.25em] text-primary/60">
+            Have a project in mind?
+          </p>
+
+          <div className="flex flex-col justify-between gap-10 lg:flex-row lg:items-end">
+            <div>
+              <h2 className="max-w-4xl text-[clamp(3.4rem,9vw,8rem)] font-semibold leading-[0.86] tracking-[-0.065em] text-white">
+                Let’s{" "}
+                <span className="text-primary">talk.</span>
+              </h2>
+
+              <p className="mt-7 max-w-lg text-sm leading-6 text-white/30 sm:text-base">
+                From product ideas to complex engineering challenges, let’s
+                turn the next idea into something useful.
+              </p>
+            </div>
+
+            <motion.a
+              href={`mailto:${EMAIL}`}
+              whileHover={{ y: -4 }}
+              whileTap={{ scale: 0.97 }}
+              className="group inline-flex w-fit items-center gap-3 rounded-full border border-primary/25 bg-primary/[0.08] px-5 py-3.5 text-xs font-medium text-primary transition-colors hover:bg-primary/[0.14]"
+            >
+              Start a conversation
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-white transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
+                <FiArrowUpRight size={13} />
+              </span>
+            </motion.a>
+          </div>
+        </motion.div>
+
+        {/* Information grid */}
+        <div className="grid gap-12 border-b border-white/[0.06] py-12 sm:py-14 lg:grid-cols-[1.15fr_.8fr_.9fr] lg:gap-16">
+          <ContactBlock />
+          <FooterNavigation />
+          <LocationBlock />
+        </div>
+
+        {/* Social row */}
+        <div className="flex flex-col gap-6 border-b border-white/[0.06] py-8 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-mono text-[8px] uppercase tracking-[0.2em] text-white/15">
+            Find me online
+          </p>
+
+          <div className="flex flex-wrap gap-2">
+            {SOCIALS.map((social) => (
+              <SocialIcon key={social.label} {...social} />
+            ))}
+          </div>
+        </div>
+
+        <FooterBottom />
+      </div>
+
+      <ScrollToTop />
     </footer>
   );
 }
 
-// Sub-components
-
-const AnimatedHeadline: React.FC = () => {
-  const letters = "Let's talk.".split("");
-  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-      style={{ marginBottom: 56 }}
-    >
-      <p style={{
-        fontFamily: "Courier New, monospace",
-        fontSize: 9,
-        letterSpacing: "0.35em",
-        textTransform: "uppercase",
-        color: "rgba(237,224,204,0.3)",
-        marginBottom: 16,
-      }}>— Have a project in mind?</p>
-      {/* Letter hover animation */}
-      <h2 style={{
-        fontFamily: "'Times New Roman', serif",
-        fontSize: "clamp(3.5rem, 9vw, 8.5rem)",
-        fontWeight: 700,
-        lineHeight: 0.88,
-        letterSpacing: "-0.03em",
-        margin: 0,
-        display: "flex",
-        flexWrap: "wrap",
-        cursor: "default",
-      }}>
-        {letters.map((char, i) => (
-          <motion.span
-            key={i}
-            onHoverStart={() => setHoverIndex(i)}
-            onHoverEnd={() => setHoverIndex(null)}
-            animate={{
-              color:
-                hoverIndex === i
-                  ? "#9EC6F3"
-                  : char === "."
-                  ? "#9EC6F3"
-                  : hoverIndex !== null && Math.abs(hoverIndex - i) === 1
-                  ? "#BDDDE4"
-                  : "#FFF1D5",
-              y: hoverIndex === i ? -6 : 0,
-            }}
-            transition={{ duration: 0.18 }}
-            style={{ display: "inline-block" }}
-          >
-            {char === " " ? "\u00A0" : char}
-          </motion.span>
-        ))}
-      </h2>
-    </motion.div>
-  );
-};
-
-const InfoGrid: React.FC = () => (
-  <motion.div
-    initial={{ opacity: 0, y: 24 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    transition={{ duration: 0.8, delay: 0.15 }}
-    style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-      gap: 48,
-      paddingBottom: 56,
-      borderBottom: "1px solid rgba(237,224,204,0.07)",
-    }}
-  >
-    <ContactInfo />
-    <NavigationLinks />
-    <LocationSocials />
-  </motion.div>
-);
-
-const ContactInfo: React.FC = () => (
-  <div>
-    <p style={{
-      fontFamily: "Courier New, monospace",
-      fontSize: 9,
-      letterSpacing: "0.3em",
-      textTransform: "uppercase",
-      color: "rgba(237,224,204,0.3)",
-      marginBottom: 16,
-    }}>§ Direct</p>
-    {/* Email CTA */}
-    <a
-      href={`mailto:${EMAIL}`}
-      style={{
-        fontFamily: "'Times New Roman', serif",
-        fontSize: 15,
-        fontStyle: "italic",
-        color: "rgba(237,224,204,0.65)",
-        textDecoration: "none",
-        display: "block",
-        marginBottom: 20,
-        transition: "color 0.2s",
-      }}
-      onMouseEnter={(e) => (e.currentTarget.style.color = "#9EC6F3")}
-      onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(237,224,204,0.65)")}
-    >
-      {EMAIL} ↗
-    </a>
-  </div>
-);
-
-const NavigationLinks: React.FC = () => (
-  <div>
-    <p style={{
-      fontFamily: "Courier New, monospace",
-      fontSize: 9,
-      letterSpacing: "0.3em",
-      textTransform: "uppercase",
-      color: "rgba(237,224,204,0.3)",
-      marginBottom: 16,
-    }}>§ Navigation</p>
-    {NAV_LINKS.map(({ label, href }) => (
-      <motion.a
-        key={label}
-        href={href}
-        style={{
-          fontFamily: "'Times New Roman', serif",
-          fontSize: 16,
-          fontStyle: "italic",
-          color: "rgba(237,224,204,0.45)",
-          textDecoration: "none",
-          display: "flex",
-          alignItems: "center",
-          gap: 8,
-        }}
-        whileHover={{ x: 6 }}
-      >
-        <span style={{ fontSize: 10, color: "#9EC6F3", opacity: 0.6 }}>→</span>
-        {label}
-      </motion.a>
-    ))}
-  </div>
-);
-
-const LocationSocials: React.FC = () => (
-  <div>
-    {/* Location + Time + Availability Badge + Social icons */}
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-      <FiMapPin size={12} color="rgba(212,162,84,0.7)" />
-      <span style={{
-        fontFamily: "Courier New, monospace",
-        fontSize: 11,
-        letterSpacing: "0.15em",
-        color: "rgba(237,224,204,0.45)",
-      }}>Colombo, Sri Lanka</span>
-    </div>
-    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 24 }}>
-      <FiClock size={12} color="rgba(212,162,84,0.7)" />
-      <span style={{ color: "rgba(237,224,204,0.35)" }}>
-        <LiveClock />
-        <span style={{
-          fontFamily: "Courier New, monospace",
-          fontSize: 10,
-          letterSpacing: "0.15em",
-          color: "rgba(237,224,204,0.25)",
-          marginLeft: 6,
-        }}>IST</span>
-      </span>
-    </div>
-    {/* Availability Badge */}
-    <div style={{
-      display: "inline-flex",
-      alignItems: "center",
-      gap: 8,
-      padding: "6px 12px",
-      border: "1px solid rgba(158,198,243,0.25)",
-      background: "rgba(158,198,243,0.06)",
-    }}>
-      <span style={{
-        width: 6,
-        height: 6,
-        borderRadius: "50%",
-        background: "#9EC6F3",
-        display: "inline-block",
-        animation: "pulse 2s ease-in-out infinite",
-      }} />
-      <span style={{
-        fontFamily: "Courier New, monospace",
-        fontSize: 10,
-        letterSpacing: "0.2em",
-        textTransform: "uppercase",
-        color: "#9EC6F3",
-      }}>Open to work</span>
-    </div>
-    {/* Social Icons */}
-    <div style={{ display: "flex", gap: 8, marginTop: 16 }}>
-      {SOCIALS.map(({ Icon, href, label }) => (
-        <motion.a
-          key={label}
-          href={href}
-          title={label}
-          target="_blank"
-          rel="noopener noreferrer"
-          whileHover={{ y: -3, scale: 1.1 }}
-          style={{
-            width: 36,
-            height: 36,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            border: "1px solid rgba(237,224,204,0.1)",
-            color: "rgba(237,224,204,0.4)",
-            borderRadius: "50%",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-          }}
-        >
-          <Icon size={14} />
-        </motion.a>
-      ))}
-    </div>
-  </div>
-);
-
-const BottomBar: React.FC<{ onScrollToTop: () => void }> = ({ onScrollToTop }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      transition={{ duration: 0.8, delay: 0.3 }}
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        padding: "24px 0 32px",
-      }}
-    >
-      {/* Left: Copyright info */}
-      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-        <span style={{
-          fontFamily: "Courier New, monospace",
-          fontSize: 10,
-          letterSpacing: "0.25em",
-          textTransform: "uppercase",
-          color: "rgba(237,224,204,0.25)",
-        }}>© 2026 Saranga Rasingolla</span>
-        <div style={{ width: 1, height: 12, background: "rgba(237,224,204,0.1)" }} />
-        <span style={{
-          fontFamily: "Courier New, monospace",
-          fontSize: 10,
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          color: "rgba(237,224,204,0.2)",
-        }}>Built with React · TypeScript</span>
-      </div>
-      {/* Right: Back to top */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-        <span style={{
-          fontFamily: "Courier New, monospace",
-          fontSize: 9,
-          letterSpacing: "0.3em",
-          textTransform: "uppercase",
-          color: "rgba(237,224,204,0.2)",
-        }}>Back to top</span>
-        <ScrollRing onClick={onScrollToTop} />
-      </div>
-    </motion.div>
-  );
-};
+export default Footer;

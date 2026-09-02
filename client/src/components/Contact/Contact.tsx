@@ -1,5 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback } from "react";
-import { motion, AnimatePresence, useReducedMotion, type Variants } from "framer-motion";
+import React, { useEffect, useState, useCallback } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 import {
   FiGithub,
   FiLinkedin,
@@ -15,109 +20,113 @@ import {
   FiUser,
   FiMessageSquare,
   FiZap,
+  FiExternalLink,
 } from "react-icons/fi";
 import { SectionHeading } from "../About/SectionHeading";
 import API from "../../api/api";
 
-// ─── Constants ──────────────────────────────────────────────────────────────
-
 const EMAIL = "rasingollasaranga35@gmail.com";
 
 const SERVICES = [
-  { id: "fullstack",   label: "Full Stack Dev",       icon: FiCode   },
-  { id: "frontend",    label: "Frontend Engineering",  icon: FiLayers },
-  { id: "uiux",        label: "UI / UX Design",        icon: FiZap    },
-  { id: "mern",        label: "MERN Applications",     icon: FiCode   },
-  { id: "api",         label: "API Development",       icon: FiLayers },
-  { id: "consulting",  label: "Technical Consulting",  icon: FiZap    },
+  { id: "fullstack", label: "Full Stack Development", icon: FiCode },
+  { id: "frontend", label: "Frontend Engineering", icon: FiLayers },
+  { id: "uiux", label: "UI / UX Design", icon: FiZap },
+  { id: "mern", label: "MERN Applications", icon: FiCode },
+  { id: "api", label: "API Development", icon: FiLayers },
+  { id: "consulting", label: "Technical Consulting", icon: FiZap },
 ];
 
 const TIMELINES = [
-  { id: "asap",   label: "ASAP"        },
-  { id: "2w",     label: "1–2 Weeks"   },
-  { id: "1m",     label: "1 Month"     },
-  { id: "3m",     label: "2–3 Months"  },
-  { id: "flex",   label: "Flexible"    },
+  { id: "asap", label: "ASAP" },
+  { id: "2w", label: "1–2 Weeks" },
+  { id: "1m", label: "1 Month" },
+  { id: "3m", label: "2–3 Months" },
+  { id: "flex", label: "Flexible" },
 ];
 
 const SOCIALS = [
-  { icon: FiGithub,   label: "GitHub",   href: "https://github.com/saranga423" },
-  { icon: FiLinkedin, label: "LinkedIn",  href: "https://linkedin.com"          },
-  { icon: FiMail,     label: "Email",     href: `mailto:${EMAIL}`               },
+  {
+    icon: FiGithub,
+    label: "GitHub",
+    href: "https://github.com/saranga423",
+  },
+  {
+    icon: FiLinkedin,
+    label: "LinkedIn",
+    href: "https://linkedin.com",
+  },
+  {
+    icon: FiMail,
+    label: "Email",
+    href: `mailto:${EMAIL}`,
+  },
 ];
 
-// Multi-step structure: each step is a named group
 const STEPS = [
-  { id: "who",     label: "About you",   icon: FiUser          },
-  { id: "project", label: "Your project",icon: FiCode          },
-  { id: "message", label: "Message",     icon: FiMessageSquare },
+  { id: "who", label: "Profile", icon: FiUser },
+  { id: "project", label: "Project", icon: FiCode },
+  { id: "message", label: "Message", icon: FiMessageSquare },
 ];
 
-// ─── Animation Variants ─────────────────────────────────────────────────────
-
-// Typed as Variants:
-//  • every variant is a function (TargetResolver) — satisfies framer-motion's type
-//  • ease uses a cubic-bezier tuple, not a plain string — fixes TS2322
 const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
 const slideVariants: Variants = {
-  enter: (dir: number) => ({
+  enter: (direction: number) => ({
     opacity: 0,
-    x: dir > 0 ? 32 : -32,
+    x: direction > 0 ? 30 : -30,
   }),
-  center: (_custom: unknown) => ({
+  center: {
     opacity: 1,
     x: 0,
     transition: { duration: 0.35, ease: EASE },
-  }),
-  exit: (dir: number) => ({
+  },
+  exit: (direction: number) => ({
     opacity: 0,
-    x: dir > 0 ? -32 : 32,
+    x: direction > 0 ? -30 : 30,
     transition: { duration: 0.25, ease: EASE },
   }),
 };
 
-// ─── Micro Background ────────────────────────────────────────────────────────
-
 function ContactBackground() {
-  const shouldReduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion();
+
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Subtle dot grid */}
-      <svg className="absolute inset-0 w-full h-full opacity-[0.025]" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="dots" width="28" height="28" patternUnits="userSpaceOnUse">
-            <circle cx="1" cy="1" r="1" fill="white" />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#dots)" />
-      </svg>
-      {/* Soft color blooms */}
-      <motion.div
-        className="absolute rounded-full"
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+    >
+      <div
+        className="absolute inset-0 opacity-[0.025]"
         style={{
-          width: 600, height: 600,
-          left: "-10%", top: "20%",
-          background: "radial-gradient(circle, rgba(99,102,241,0.07) 0%, transparent 70%)",
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.8) 1px, transparent 1px)",
+          backgroundSize: "72px 72px",
         }}
-        animate={shouldReduceMotion ? {} : { y: [0, -24, 0], x: [0, 16, 0] }}
-        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
       />
+
       <motion.div
-        className="absolute rounded-full"
-        style={{
-          width: 500, height: 500,
-          right: "-8%", bottom: "10%",
-          background: "radial-gradient(circle, rgba(56,189,248,0.06) 0%, transparent 70%)",
+        className="absolute -left-48 top-20 h-[520px] w-[520px] rounded-full bg-primary/[0.10] blur-[150px]"
+        animate={
+          reduceMotion ? {} : { x: [0, 30, 0], y: [0, -20, 0] }
+        }
+        transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+      />
+
+      <motion.div
+        className="absolute -right-48 bottom-0 h-[560px] w-[560px] rounded-full bg-cyan-400/[0.055] blur-[160px]"
+        animate={
+          reduceMotion ? {} : { x: [0, -25, 0], y: [0, 25, 0] }
+        }
+        transition={{
+          duration: 22,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 3,
         }}
-        animate={shouldReduceMotion ? {} : { y: [0, 20, 0], x: [0, -12, 0] }}
-        transition={{ duration: 25, repeat: Infinity, ease: "easeInOut", delay: 5 }}
       />
     </div>
   );
 }
-
-// ─── Availability Card ────────────────────────────────────────────────────────
 
 function AvailabilityCard() {
   return (
@@ -125,70 +134,74 @@ function AvailabilityCard() {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="rounded-2xl p-5 space-y-4"
-      style={{
-        background: "rgba(255,255,255,0.03)",
-        border: "1px solid rgba(255,255,255,0.07)",
-      }}
+      className="relative overflow-hidden rounded-[24px] border border-white/[0.08] bg-white/[0.025] p-6"
     >
-      <div className="flex items-center gap-2.5">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-        <span className="text-sm font-semibold text-white">Available now</span>
-      </div>
-      <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.38)" }}>
-        Open to freelance, contract, and full-time roles. Typical response within 24 hours.
-      </p>
-      <div className="flex flex-col gap-2">
-        {[
-          { icon: FiCode,   text: "Web & App Development" },
-          { icon: FiLayers, text: "Security Consulting"    },
-          { icon: FiClock,  text: "GMT+5:30 · Sri Lanka"   },
-        ].map(({ icon: Icon, text }) => (
-          <div key={text} className="flex items-center gap-2.5">
-            <Icon size={13} style={{ color: "rgba(99,102,241,0.8)" }} />
-            <span className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>{text}</span>
-          </div>
-        ))}
+      <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-primary/[0.08] blur-[70px]" />
+
+      <div className="relative">
+        <div className="mb-5 flex items-center justify-between">
+          <span className="font-mono text-[9px] uppercase tracking-[0.2em] text-white/25">
+            Availability
+          </span>
+
+          <span className="flex items-center gap-2 rounded-full border border-emerald-400/15 bg-emerald-400/[0.06] px-2.5 py-1.5 font-mono text-[8px] uppercase tracking-[0.12em] text-emerald-300/80">
+            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-400" />
+            Open
+          </span>
+        </div>
+
+        <h3 className="text-xl font-semibold tracking-[-0.025em] text-white">
+          Available for new work.
+        </h3>
+
+        <p className="mt-3 text-sm leading-6 text-white/35">
+          Open to freelance, contract, and full-time opportunities. Typical
+          response within 24 hours.
+        </p>
+
+        <div className="mt-6 space-y-3 border-t border-white/[0.06] pt-5">
+          {[
+            { icon: FiCode, text: "Web & App Development" },
+            { icon: FiLayers, text: "Security Consulting" },
+            { icon: FiClock, text: "GMT+5:30 · Sri Lanka" },
+          ].map(({ icon: Icon, text }) => (
+            <div key={text} className="flex items-center gap-3">
+              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/[0.08] text-primary/80">
+                <Icon size={12} />
+              </span>
+              <span className="text-xs text-white/40">{text}</span>
+            </div>
+          ))}
+        </div>
       </div>
     </motion.div>
   );
 }
 
-// ─── Social Links ─────────────────────────────────────────────────────────────
-
 function SocialRow() {
   return (
-    <div className="flex flex-col gap-2">
+    <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
       {SOCIALS.map(({ icon: Icon, label, href }) => (
         <motion.a
           key={label}
           href={href}
-          target={href.startsWith("mailto") ? undefined : "_blank"}
-          rel="noopener noreferrer"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors group"
-          style={{
-            background: "rgba(255,255,255,0.02)",
-            border: "1px solid rgba(255,255,255,0.06)",
-          }}
-          whileHover={{
-            background: "rgba(99,102,241,0.08)",
-            borderColor: "rgba(99,102,241,0.25)",
-          }}
+          target={href.startsWith("mailto:") ? undefined : "_blank"}
+          rel={href.startsWith("mailto:") ? undefined : "noopener noreferrer"}
+          whileHover={{ x: 4 }}
           whileTap={{ scale: 0.98 }}
+          className="group flex items-center gap-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-4 py-3 transition-colors hover:border-primary/20 hover:bg-primary/[0.045]"
         >
-          <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ background: "rgba(99,102,241,0.12)" }}
-          >
-            <Icon size={14} style={{ color: "#a5b4fc" }} />
-          </div>
-          <span className="text-sm font-medium" style={{ color: "rgba(255,255,255,0.6)" }}>
+          <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/[0.08] text-primary/80">
+            <Icon size={14} />
+          </span>
+
+          <span className="text-sm text-white/50 transition-colors group-hover:text-white/75">
             {label}
           </span>
+
           <FiArrowRight
             size={12}
-            className="ml-auto opacity-0 group-hover:opacity-100 transition-opacity"
-            style={{ color: "#a5b4fc" }}
+            className="ml-auto text-white/15 transition-all group-hover:translate-x-1 group-hover:text-primary/70"
           />
         </motion.a>
       ))}
@@ -196,119 +209,119 @@ function SocialRow() {
   );
 }
 
-// ─── Step Progress Bar ───────────────────────────────────────────────────────
-
 function StepBar({ step }: { step: number }) {
   return (
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-3">
-        {STEPS.map((s, i) => {
-          const Icon = s.icon;
-          const done = i < step;
-          const active = i === step;
+    <div className="mb-9">
+      <div className="mb-4 flex items-center">
+        {STEPS.map((item, index) => {
+          const Icon = item.icon;
+          const done = index < step;
+          const active = index === step;
+
           return (
-            <div key={s.id} className="flex items-center gap-2">
-              <div
-                className="w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300"
-                style={{
-                  background: done
-                    ? "rgba(99,102,241,1)"
-                    : active
-                    ? "rgba(99,102,241,0.2)"
-                    : "rgba(255,255,255,0.05)",
-                  border: active
-                    ? "1.5px solid rgba(99,102,241,0.6)"
-                    : "1px solid rgba(255,255,255,0.08)",
-                }}
-              >
-                {done ? (
-                  <FiCheckCircle size={12} style={{ color: "#fff" }} />
-                ) : (
-                  <Icon size={11} style={{ color: active ? "#a5b4fc" : "rgba(255,255,255,0.25)" }} />
-                )}
-              </div>
-              <span
-                className="text-xs hidden sm:block"
-                style={{
-                  color: active ? "#a5b4fc" : done ? "rgba(165,180,252,0.6)" : "rgba(255,255,255,0.2)",
-                  fontWeight: active ? 600 : 400,
-                }}
-              >
-                {s.label}
-              </span>
-              {i < STEPS.length - 1 && (
+            <React.Fragment key={item.id}>
+              <div className="flex shrink-0 items-center gap-2">
                 <div
-                  className="flex-1 h-px mx-3 transition-all duration-500"
+                  className="flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300"
                   style={{
-                    width: 40,
-                    background: i < step
-                      ? "rgba(99,102,241,0.5)"
-                      : "rgba(255,255,255,0.07)",
+                    background: done
+                      ? "#6366f1"
+                      : active
+                        ? "rgba(99,102,241,.12)"
+                        : "rgba(255,255,255,.035)",
+                    borderColor: active
+                      ? "rgba(99,102,241,.55)"
+                      : done
+                        ? "rgba(99,102,241,.8)"
+                        : "rgba(255,255,255,.08)",
                   }}
-                />
+                >
+                  {done ? (
+                    <FiCheckCircle size={12} className="text-white" />
+                  ) : (
+                    <Icon
+                      size={12}
+                      className={
+                        active ? "text-primary/90" : "text-white/25"
+                      }
+                    />
+                  )}
+                </div>
+
+                <span
+                  className="hidden text-[10px] uppercase tracking-[0.12em] sm:block"
+                  style={{
+                    color: active
+                      ? "#a5b4fc"
+                      : done
+                        ? "rgba(165,180,252,.55)"
+                        : "rgba(255,255,255,.22)",
+                  }}
+                >
+                  {item.label}
+                </span>
+              </div>
+
+              {index < STEPS.length - 1 && (
+                <div className="mx-3 h-px flex-1 bg-white/[0.07]">
+                  <motion.div
+                    className="h-full bg-primary/50"
+                    initial={false}
+                    animate={{ width: index < step ? "100%" : "0%" }}
+                    transition={{ duration: 0.35, ease: EASE }}
+                  />
+                </div>
               )}
-            </div>
+            </React.Fragment>
           );
         })}
       </div>
-      {/* Track bar */}
-      <div className="h-px w-full rounded-full" style={{ background: "rgba(255,255,255,0.06)" }}>
+
+      <div className="h-1 overflow-hidden rounded-full bg-white/[0.05]">
         <motion.div
-          className="h-full rounded-full"
-          style={{ background: "linear-gradient(90deg, #6366f1, #a78bfa)" }}
+          className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-violet-500"
           animate={{ width: `${((step + 1) / STEPS.length) * 100}%` }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          transition={{ duration: 0.4, ease: EASE }}
         />
       </div>
     </div>
   );
 }
 
-// ─── Styled Input ─────────────────────────────────────────────────────────────
-
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   error?: string;
 }
 
 function Field({ label, error, ...props }: InputProps) {
   const id = props.id ?? props.name;
+
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="space-y-2">
       <label
         htmlFor={id}
-        className="text-xs font-medium uppercase tracking-widest"
-        style={{ color: "rgba(255,255,255,0.3)" }}
+        className="block font-mono text-[9px] uppercase tracking-[0.18em] text-white/30"
       >
         {label}
       </label>
+
       <input
         id={id}
         {...props}
-        className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none transition-all"
-        style={{
-          background: "rgba(255,255,255,0.04)",
-          border: error ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.08)",
-          caretColor: "#a5b4fc",
-        }}
-        onFocus={(e) => {
-          (e.currentTarget as HTMLInputElement).style.borderColor = "rgba(99,102,241,0.5)";
-          (e.currentTarget as HTMLInputElement).style.boxShadow = "0 0 0 3px rgba(99,102,241,0.08)";
-          props.onFocus?.(e);
-        }}
-        onBlur={(e) => {
-          (e.currentTarget as HTMLInputElement).style.borderColor =
-            error ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.08)";
-          (e.currentTarget as HTMLInputElement).style.boxShadow = "none";
-          props.onBlur?.(e);
-        }}
+        className={`w-full rounded-xl border bg-white/[0.035] px-4 py-3.5 text-sm text-white outline-none transition placeholder:text-white/15 ${
+          error
+            ? "border-red-400/40"
+            : "border-white/[0.08] focus:border-primary/45 focus:bg-primary/[0.035]"
+        }`}
+        aria-invalid={Boolean(error)}
       />
+
       {error && (
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-1.5 text-xs"
-          style={{ color: "rgba(252,165,165,0.9)" }}
+          className="flex items-center gap-1.5 text-xs text-red-300/80"
         >
           <FiAlertCircle size={11} />
           {error}
@@ -318,63 +331,57 @@ function Field({ label, error, ...props }: InputProps) {
   );
 }
 
-// ─── Styled Textarea ──────────────────────────────────────────────────────────
-
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   error?: string;
   max?: number;
 }
 
-function TextareaField({ label, error, max, ...props }: TextareaProps) {
+function TextareaField({
+  label,
+  error,
+  max,
+  ...props
+}: TextareaProps) {
   const id = props.id ?? props.name;
-  const len = (props.value as string)?.length ?? 0;
+  const value = typeof props.value === "string" ? props.value : "";
+
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="space-y-2">
       <div className="flex items-center justify-between">
         <label
           htmlFor={id}
-          className="text-xs font-medium uppercase tracking-widest"
-          style={{ color: "rgba(255,255,255,0.3)" }}
+          className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/30"
         >
           {label}
         </label>
+
         {max && (
-          <span
-            className="text-[10px] font-mono"
-            style={{ color: len > max * 0.85 ? "rgba(251,191,36,0.7)" : "rgba(255,255,255,0.2)" }}
-          >
-            {len} / {max}
+          <span className="font-mono text-[9px] text-white/20">
+            {value.length}/{max}
           </span>
         )}
       </div>
+
       <textarea
         id={id}
         {...props}
         maxLength={max}
-        rows={5}
-        className="w-full px-4 py-3 rounded-xl text-sm text-white outline-none resize-none transition-all"
-        style={{
-          background: "rgba(255,255,255,0.04)",
-          border: error ? "1px solid rgba(239,68,68,0.5)" : "1px solid rgba(255,255,255,0.08)",
-          caretColor: "#a5b4fc",
-        }}
-        onFocus={(e) => {
-          (e.currentTarget as HTMLTextAreaElement).style.borderColor = "rgba(99,102,241,0.5)";
-          (e.currentTarget as HTMLTextAreaElement).style.boxShadow = "0 0 0 3px rgba(99,102,241,0.08)";
-        }}
-        onBlur={(e) => {
-          (e.currentTarget as HTMLTextAreaElement).style.borderColor =
-            error ? "rgba(239,68,68,0.5)" : "rgba(255,255,255,0.08)";
-          (e.currentTarget as HTMLTextAreaElement).style.boxShadow = "none";
-        }}
+        rows={6}
+        className={`w-full resize-none rounded-xl border bg-white/[0.035] px-4 py-3.5 text-sm leading-6 text-white outline-none transition placeholder:text-white/15 ${
+          error
+            ? "border-red-400/40"
+            : "border-white/[0.08] focus:border-primary/45 focus:bg-primary/[0.035]"
+        }`}
+        aria-invalid={Boolean(error)}
       />
+
       {error && (
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-1.5 text-xs"
-          style={{ color: "rgba(252,165,165,0.9)" }}
+          className="flex items-center gap-1.5 text-xs text-red-300/80"
         >
           <FiAlertCircle size={11} />
           {error}
@@ -384,56 +391,67 @@ function TextareaField({ label, error, max, ...props }: TextareaProps) {
   );
 }
 
-// ─── Chip Selector ────────────────────────────────────────────────────────────
-
-interface ChipGroupProps<T extends string> {
+interface ChipGroupProps {
   label: string;
-  options: { id: T; label: string; icon?: React.ElementType }[];
-  value: T;
-  onChange: (val: T) => void;
+  options: {
+    id: string;
+    label: string;
+    icon?: React.ElementType;
+  }[];
+  value: string;
+  onChange: (value: string) => void;
   error?: string;
 }
 
-function ChipGroup<T extends string>({ label, options, value, onChange, error }: ChipGroupProps<T>) {
+function ChipGroup({
+  label,
+  options,
+  value,
+  onChange,
+  error,
+}: ChipGroupProps) {
   return (
-    <div className="flex flex-col gap-2">
-      <span
-        className="text-xs font-medium uppercase tracking-widest"
-        style={{ color: "rgba(255,255,255,0.3)" }}
-      >
+    <div className="space-y-2">
+      <span className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/30">
         {label}
       </span>
-      <div className="flex flex-wrap gap-2">
-        {options.map((opt) => {
-          const Icon = opt.icon;
-          const active = value === opt.id;
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {options.map((option) => {
+          const Icon = option.icon;
+          const active = value === option.id;
+
           return (
             <motion.button
-              key={opt.id}
+              key={option.id}
               type="button"
-              onClick={() => onChange(opt.id as T)}
-              whileTap={{ scale: 0.96 }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
+              onClick={() => onChange(option.id)}
+              whileTap={{ scale: 0.97 }}
+              className="flex min-h-[48px] items-center gap-2 rounded-xl border px-3 text-left text-xs transition-all"
               style={{
-                background: active ? "rgba(99,102,241,0.2)" : "rgba(255,255,255,0.04)",
-                border: active
-                  ? "1px solid rgba(99,102,241,0.55)"
-                  : "1px solid rgba(255,255,255,0.07)",
-                color: active ? "#a5b4fc" : "rgba(255,255,255,0.38)",
+                background: active
+                  ? "rgba(99,102,241,.12)"
+                  : "rgba(255,255,255,.025)",
+                borderColor: active
+                  ? "rgba(99,102,241,.45)"
+                  : "rgba(255,255,255,.07)",
+                color: active
+                  ? "#c7d2fe"
+                  : "rgba(255,255,255,.38)",
               }}
             >
-              {Icon && <Icon size={11} />}
-              {opt.label}
+              {Icon && <Icon size={12} className="shrink-0" />}
+              <span className="leading-4">{option.label}</span>
             </motion.button>
           );
         })}
       </div>
+
       {error && (
         <motion.p
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-1.5 text-xs"
-          style={{ color: "rgba(252,165,165,0.9)" }}
+          className="flex items-center gap-1.5 text-xs text-red-300/80"
         >
           <FiAlertCircle size={11} />
           {error}
@@ -442,8 +460,6 @@ function ChipGroup<T extends string>({ label, options, value, onChange, error }:
     </div>
   );
 }
-
-// ─── Form State & Validation ─────────────────────────────────────────────────
 
 interface FormData {
   name: string;
@@ -454,65 +470,84 @@ interface FormData {
   message: string;
 }
 
-const EMPTY: FormData = { name: "", email: "", service: "", timeline: "", subject: "", message: "" };
+const EMPTY: FormData = {
+  name: "",
+  email: "",
+  service: "",
+  timeline: "",
+  subject: "",
+  message: "",
+};
 
 type FieldErrors = Partial<Record<keyof FormData, string>>;
 
 function validateStep(step: number, form: FormData): FieldErrors {
-  const errs: FieldErrors = {};
-  if (step === 0) {
-    if (!form.name.trim()) errs.name = "Your name is required";
-    else if (form.name.trim().length < 2) errs.name = "Name must be at least 2 characters";
-    if (!form.email.trim()) errs.email = "Email is required";
-    else if (!/\S+@\S+\.\S+/.test(form.email)) errs.email = "Enter a valid email address";
-  }
-  if (step === 1) {
-    if (!form.service) errs.service = "Pick a service to continue";
-    if (!form.timeline) errs.timeline = "Pick a timeline to continue";
-    if (!form.subject.trim()) errs.subject = "Subject is required";
-  }
-  if (step === 2) {
-    if (!form.message.trim()) errs.message = "Message can't be empty";
-    else if (form.message.trim().length < 20) errs.message = "Please add a bit more detail (20+ chars)";
-  }
-  return errs;
-}
+  const errors: FieldErrors = {};
 
-// ─── Success Screen ───────────────────────────────────────────────────────────
+  if (step === 0) {
+    if (!form.name.trim()) {
+      errors.name = "Your name is required";
+    } else if (form.name.trim().length < 2) {
+      errors.name = "Name must be at least 2 characters";
+    }
+
+    if (!form.email.trim()) {
+      errors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(form.email)) {
+      errors.email = "Enter a valid email address";
+    }
+  }
+
+  if (step === 1) {
+    if (!form.service) errors.service = "Pick a service to continue";
+    if (!form.timeline) errors.timeline = "Pick a timeline to continue";
+    if (!form.subject.trim()) errors.subject = "Subject is required";
+  }
+
+  if (step === 2) {
+    if (!form.message.trim()) {
+      errors.message = "Message can't be empty";
+    } else if (form.message.trim().length < 20) {
+      errors.message = "Please add a bit more detail (20+ characters)";
+    }
+  }
+
+  return errors;
+}
 
 function SuccessScreen({ onReset }: { onReset: () => void }) {
   return (
     <motion.div
-      key="success"
-      initial={{ opacity: 0, scale: 0.92 }}
+      initial={{ opacity: 0, scale: 0.96 }}
       animate={{ opacity: 1, scale: 1 }}
-      exit={{ opacity: 0, scale: 0.92 }}
-      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col items-center justify-center py-16 text-center gap-5"
+      className="flex min-h-[430px] flex-col items-center justify-center px-4 text-center"
     >
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
-        transition={{ type: "spring", stiffness: 260, damping: 20, delay: 0.15 }}
-        className="w-20 h-20 rounded-full flex items-center justify-center"
-        style={{ background: "rgba(16,185,129,0.12)", border: "1px solid rgba(16,185,129,0.25)" }}
+        transition={{ type: "spring", stiffness: 240, damping: 18 }}
+        className="mb-7 flex h-20 w-20 items-center justify-center rounded-full border border-emerald-400/20 bg-emerald-400/[0.08]"
       >
-        <FiCheckCircle size={36} style={{ color: "#34d399" }} />
+        <FiCheckCircle size={34} className="text-emerald-300" />
       </motion.div>
-      <div className="space-y-2">
-        <h3 className="text-2xl font-bold text-white tracking-tight">Message sent</h3>
-        <p className="text-sm max-w-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
-          Thanks for reaching out — I'll get back to you within 24 hours.
-        </p>
-      </div>
+
+      <p className="mb-3 font-mono text-[9px] uppercase tracking-[0.22em] text-emerald-300/60">
+        Transmission complete
+      </p>
+
+      <h3 className="text-3xl font-semibold tracking-[-0.04em] text-white">
+        Message sent.
+      </h3>
+
+      <p className="mt-3 max-w-sm text-sm leading-6 text-white/35">
+        Thanks for reaching out. I’ll review your message and get back to you
+        within 24 hours.
+      </p>
+
       <button
+        type="button"
         onClick={onReset}
-        className="mt-2 text-xs font-medium px-4 py-2 rounded-lg transition-colors"
-        style={{
-          color: "rgba(165,180,252,0.7)",
-          border: "1px solid rgba(99,102,241,0.2)",
-          background: "transparent",
-        }}
+        className="mt-8 rounded-xl border border-white/10 px-4 py-2.5 text-xs text-white/45 transition hover:border-primary/25 hover:text-white/75"
       >
         Send another message
       </button>
@@ -520,71 +555,127 @@ function SuccessScreen({ onReset }: { onReset: () => void }) {
   );
 }
 
-// ─── Main Contact Component ───────────────────────────────────────────────────
-
 const Contact = () => {
-  const [step, setStep]       = useState(0);
-  const [dir, setDir]         = useState(1);
+  const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [sent, setSent]       = useState(false);
-  const [errs, setErrs]       = useState<FieldErrors>({});
-  const [form, setForm]       = useState<FormData>(EMPTY);
+  const [sent, setSent] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [form, setForm] = useState<FormData>(EMPTY);
 
-  // Restore draft
   useEffect(() => {
     try {
       const saved = localStorage.getItem("contactDraft");
-      if (saved) setForm(JSON.parse(saved));
-    } catch {}
+
+      if (saved) {
+        const parsed = JSON.parse(saved);
+
+        if (parsed && typeof parsed === "object") {
+          setForm((current) => ({
+            ...current,
+            ...parsed,
+          }));
+        }
+      }
+    } catch {
+      // Ignore invalid local drafts.
+    }
   }, []);
 
-  // Persist draft
   useEffect(() => {
-    localStorage.setItem("contactDraft", JSON.stringify(form));
-  }, [form]);
+    try {
+      if (!sent) {
+        localStorage.setItem("contactDraft", JSON.stringify(form));
+      }
+    } catch {
+      // Ignore localStorage failures.
+    }
+  }, [form, sent]);
 
-  const set = useCallback(
+  const updateField = useCallback(
     (field: keyof FormData) =>
-      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setForm((prev) => ({ ...prev, [field]: e.target.value }));
-        if (errs[field]) setErrs((prev) => ({ ...prev, [field]: undefined }));
+      (
+        event: React.ChangeEvent<
+          HTMLInputElement | HTMLTextAreaElement
+        >
+      ) => {
+        const value = event.target.value;
+
+        setForm((previous) => ({
+          ...previous,
+          [field]: value,
+        }));
+
+        setErrors((previous) => {
+          if (!previous[field]) return previous;
+
+          const next = { ...previous };
+          delete next[field];
+          return next;
+        });
       },
-    [errs]
+    []
   );
 
-  const setVal = useCallback(
-    (field: keyof FormData) => (val: string) => {
-      setForm((prev) => ({ ...prev, [field]: val }));
-      if (errs[field]) setErrs((prev) => ({ ...prev, [field]: undefined }));
+  const updateValue = useCallback(
+    (field: keyof FormData) => (value: string) => {
+      setForm((previous) => ({
+        ...previous,
+        [field]: value,
+      }));
+
+      setErrors((previous) => {
+        if (!previous[field]) return previous;
+
+        const next = { ...previous };
+        delete next[field];
+        return next;
+      });
     },
-    [errs]
+    []
   );
 
   const next = () => {
-    const stepErrs = validateStep(step, form);
-    if (Object.keys(stepErrs).length) { setErrs(stepErrs); return; }
-    setErrs({});
-    setDir(1);
-    setStep((p) => p + 1);
+    const stepErrors = validateStep(step, form);
+
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors(stepErrors);
+      return;
+    }
+
+    setErrors({});
+    setDirection(1);
+    setStep((current) => Math.min(current + 1, STEPS.length - 1));
   };
 
   const back = () => {
-    setErrs({});
-    setDir(-1);
-    setStep((p) => p - 1);
+    setErrors({});
+    setDirection(-1);
+    setStep((current) => Math.max(current - 1, 0));
   };
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const stepErrs = validateStep(2, form);
-    if (Object.keys(stepErrs).length) { setErrs(stepErrs); return; }
+  const submit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const stepErrors = validateStep(2, form);
+
+    if (Object.keys(stepErrors).length > 0) {
+      setErrors(stepErrors);
+      return;
+    }
+
     try {
       setLoading(true);
+      setErrors({});
+
       await API.post("/contact", form);
+
       setSent(true);
       localStorage.removeItem("contactDraft");
     } catch {
-      setErrs({ message: "Failed to send. Please try again." });
+      setErrors({
+        message: "Failed to send your message. Please try again.",
+      });
     } finally {
       setLoading(false);
     }
@@ -593,83 +684,81 @@ const Contact = () => {
   const reset = () => {
     setSent(false);
     setStep(0);
+    setDirection(1);
     setForm(EMPTY);
-    setErrs({});
+    setErrors({});
   };
 
   return (
     <section
       id="contact"
-      className="relative overflow-hidden py-32"
-      style={{ background: "linear-gradient(180deg, #0a0f1e 0%, #080d1a 100%)" }}
+      className="relative overflow-hidden bg-[#07080d] py-24 text-foreground sm:py-32"
     >
       <ContactBackground />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+      <div className="relative z-10 mx-auto max-w-6xl px-5 sm:px-8">
         <SectionHeading
           index="05"
           eyebrow="Contact"
-          title={<>Let's create something <em>extraordinary.</em></>}
-          description="Available for freelance, contract, and full-time opportunities."
+          title={
+            <>
+              Let’s build something{" "}
+              <span className="text-primary">meaningful.</span>
+            </>
+          }
+          description="Have an idea, product, or technical challenge? Tell me what you’re working on and I’ll get back to you."
         />
 
-        <div className="mt-20 grid gap-10 lg:grid-cols-[360px_1fr]">
-          {/* ── Left column ─────────────────────────────────── */}
-          <motion.div
-            initial={{ opacity: 0, x: -32 }}
+        <div className="grid gap-6 lg:grid-cols-[310px_minmax(0,1fr)] lg:items-start lg:gap-8">
+          {/* Information panel */}
+          <motion.aside
+            initial={{ opacity: 0, x: -25 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-5"
+            transition={{ duration: 0.6, ease: EASE }}
+            className="space-y-4"
           >
             <AvailabilityCard />
 
-            {/* Direct email */}
-            <div
-              className="rounded-2xl p-5"
-              style={{
-                background: "rgba(99,102,241,0.06)",
-                border: "1px solid rgba(99,102,241,0.15)",
-              }}
-            >
-              <p className="text-[11px] font-medium uppercase tracking-widest mb-2" style={{ color: "rgba(165,180,252,0.5)" }}>
-                Direct email
+            <div className="rounded-[22px] border border-primary/15 bg-primary/[0.035] p-5">
+              <p className="mb-2 font-mono text-[9px] uppercase tracking-[0.2em] text-primary/50">
+                Direct channel
               </p>
+
               <a
                 href={`mailto:${EMAIL}`}
-                className="text-sm font-medium break-all"
-                style={{ color: "#a5b4fc" }}
+                className="flex items-center gap-2 text-sm text-primary/80 transition hover:text-primary"
               >
-                {EMAIL}
+                <FiMail size={13} />
+                <span className="break-all">{EMAIL}</span>
               </a>
+
+              <p className="mt-3 text-xs leading-5 text-white/25">
+                Prefer email? Send your brief directly and skip the form.
+              </p>
             </div>
 
             <SocialRow />
 
-            {/* "Response time" note */}
-            <div className="flex items-center gap-2 px-1">
-              <FiClock size={11} style={{ color: "rgba(255,255,255,0.2)" }} />
-              <span className="text-xs" style={{ color: "rgba(255,255,255,0.2)" }}>
+            <div className="flex items-center gap-2 px-1 pt-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary/60" />
+              <span className="font-mono text-[9px] uppercase tracking-[0.16em] text-white/20">
                 Typical response · under 24 hours
               </span>
             </div>
-          </motion.div>
+          </motion.aside>
 
-          {/* ── Right column — multi-step form ──────────────── */}
+          {/* Form panel */}
           <motion.div
-            initial={{ opacity: 0, y: 32 }}
+            initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-2xl p-8 overflow-hidden"
-            style={{
-              background: "rgba(255,255,255,0.025)",
-              border: "1px solid rgba(255,255,255,0.07)",
-              backdropFilter: "blur(24px)",
-              WebkitBackdropFilter: "blur(24px)",
-            }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="relative overflow-hidden rounded-[26px] border border-white/[0.08] bg-[#0a0c12]/90 p-5 shadow-[0_25px_80px_rgba(0,0,0,.22)] backdrop-blur-2xl sm:p-8"
           >
-            <AnimatePresence mode="wait" custom={dir}>
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+
+            <AnimatePresence mode="wait">
               {sent ? (
                 <SuccessScreen key="success" onReset={reset} />
               ) : (
@@ -679,39 +768,62 @@ const Contact = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  {/* Step progress */}
-                  <StepBar step={step} />
+                  <div className="mb-2 flex items-center justify-between">
+                    <div>
+                      <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary/60">
+                        Project inquiry
+                      </p>
+                      <h3 className="mt-2 text-xl font-semibold tracking-[-0.025em] text-white">
+                        Start the conversation
+                      </h3>
+                    </div>
 
-                  {/* Step slides */}
+                    <span className="hidden items-center gap-2 rounded-full border border-white/[0.07] bg-white/[0.025] px-3 py-1.5 font-mono text-[8px] uppercase tracking-[0.14em] text-white/25 sm:flex">
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+                      Secure form
+                    </span>
+                  </div>
+
+                  <div className="mt-8">
+                    <StepBar step={step} />
+                  </div>
+
                   <form onSubmit={submit} noValidate>
-                    <AnimatePresence mode="wait" custom={dir}>
-                      {/* Step 0 — Who are you */}
+                    <AnimatePresence mode="wait" custom={direction}>
                       {step === 0 && (
                         <motion.div
-                          key="step0"
-                          custom={dir}
+                          key="step-profile"
+                          custom={direction}
                           variants={slideVariants}
                           initial="enter"
                           animate="center"
                           exit="exit"
                           className="space-y-5"
                         >
-                          <div className="mb-1">
-                            <h3 className="text-base font-semibold text-white">Tell me about yourself</h3>
-                            <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
-                              Just the basics so I can reply to the right person.
+                          <div className="mb-6">
+                            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/20">
+                              01 / Introduction
+                            </p>
+                            <h4 className="mt-2 text-base font-medium text-white/85">
+                              Who are you?
+                            </h4>
+                            <p className="mt-1 text-xs leading-5 text-white/30">
+                              Give me the basics so I know who I’m speaking
+                              with.
                             </p>
                           </div>
+
                           <Field
                             label="Full name"
                             name="name"
                             id="name"
                             placeholder="e.g. Alex Morgan"
                             value={form.name}
-                            onChange={set("name")}
-                            error={errs.name}
+                            onChange={updateField("name")}
+                            error={errors.name}
                             autoComplete="name"
                           />
+
                           <Field
                             label="Email address"
                             name="email"
@@ -719,173 +831,190 @@ const Contact = () => {
                             type="email"
                             placeholder="you@example.com"
                             value={form.email}
-                            onChange={set("email")}
-                            error={errs.email}
+                            onChange={updateField("email")}
+                            error={errors.email}
                             autoComplete="email"
                           />
                         </motion.div>
                       )}
 
-                      {/* Step 1 — Project */}
                       {step === 1 && (
                         <motion.div
-                          key="step1"
-                          custom={dir}
+                          key="step-project"
+                          custom={direction}
                           variants={slideVariants}
                           initial="enter"
                           animate="center"
                           exit="exit"
-                          className="space-y-5"
+                          className="space-y-6"
                         >
-                          <div className="mb-1">
-                            <h3 className="text-base font-semibold text-white">About the project</h3>
-                            <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
-                              What kind of work do you need, and when?
+                          <div className="mb-6">
+                            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/20">
+                              02 / Scope
+                            </p>
+                            <h4 className="mt-2 text-base font-medium text-white/85">
+                              Tell me about the project
+                            </h4>
+                            <p className="mt-1 text-xs leading-5 text-white/30">
+                              Choose what you need and roughly when you need
+                              it.
                             </p>
                           </div>
+
                           <ChipGroup
-                            label="Service needed"
+                            label="Service"
                             options={SERVICES}
                             value={form.service}
-                            onChange={setVal("service")}
-                            error={errs.service}
+                            onChange={updateValue("service")}
+                            error={errors.service}
                           />
+
                           <ChipGroup
                             label="Timeline"
                             options={TIMELINES}
                             value={form.timeline}
-                            onChange={setVal("timeline")}
-                            error={errs.timeline}
+                            onChange={updateValue("timeline")}
+                            error={errors.timeline}
                           />
+
                           <Field
                             label="Subject"
                             name="subject"
                             id="subject"
-                            placeholder="e.g. Dashboard redesign for SaaS product"
+                            placeholder="e.g. SaaS dashboard redesign"
                             value={form.subject}
-                            onChange={set("subject")}
-                            error={errs.subject}
+                            onChange={updateField("subject")}
+                            error={errors.subject}
                           />
                         </motion.div>
                       )}
 
-                      {/* Step 2 — Message */}
                       {step === 2 && (
                         <motion.div
-                          key="step2"
-                          custom={dir}
+                          key="step-message"
+                          custom={direction}
                           variants={slideVariants}
                           initial="enter"
                           animate="center"
                           exit="exit"
-                          className="space-y-5"
+                          className="space-y-6"
                         >
-                          <div className="mb-1">
-                            <h3 className="text-base font-semibold text-white">Your message</h3>
-                            <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
-                              Describe the project, context, or anything that helps me understand the ask.
+                          <div className="mb-6">
+                            <p className="font-mono text-[9px] uppercase tracking-[0.18em] text-white/20">
+                              03 / Brief
+                            </p>
+                            <h4 className="mt-2 text-base font-medium text-white/85">
+                              What are you building?
+                            </h4>
+                            <p className="mt-1 text-xs leading-5 text-white/30">
+                              Share the context, goals, requirements, or
+                              technical challenge.
                             </p>
                           </div>
+
                           <TextareaField
-                            label="Message"
+                            label="Project message"
                             name="message"
                             id="message"
-                            placeholder="Walk me through what you're working on…"
+                            placeholder="Tell me about the problem you’re solving, what you need built, and anything else that matters…"
                             value={form.message}
-                            onChange={set("message")}
-                            error={errs.message}
+                            onChange={updateField("message")}
+                            error={errors.message}
                             max={1200}
                           />
-                          {/* Summary preview */}
-                          <div
-                            className="rounded-xl px-4 py-3 space-y-1"
-                            style={{
-                              background: "rgba(99,102,241,0.06)",
-                              border: "1px solid rgba(99,102,241,0.12)",
-                            }}
-                          >
-                            <p className="text-[10px] font-medium uppercase tracking-widest mb-2" style={{ color: "rgba(165,180,252,0.45)" }}>
-                              Summary
-                            </p>
-                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-                              <span style={{ color: "rgba(255,255,255,0.7)" }}>{form.name}</span>
-                              {" · "}{form.email}
-                            </p>
-                            <p className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
-                              {SERVICES.find(s => s.id === form.service)?.label}
-                              {" · "}{TIMELINES.find(t => t.id === form.timeline)?.label}
-                            </p>
-                            {form.subject && (
-                              <p className="text-xs" style={{ color: "rgba(165,180,252,0.6)" }}>
-                                "{form.subject}"
+
+                          <div className="rounded-2xl border border-primary/10 bg-primary/[0.035] p-4">
+                            <div className="mb-3 flex items-center gap-2">
+                              <FiZap size={12} className="text-primary/70" />
+                              <span className="font-mono text-[9px] uppercase tracking-[0.17em] text-primary/50">
+                                Inquiry preview
+                              </span>
+                            </div>
+
+                            <div className="grid gap-2 text-xs sm:grid-cols-2">
+                              <p className="truncate text-white/35">
+                                <span className="text-white/20">From: </span>
+                                {form.name || "Your name"}
                               </p>
-                            )}
+
+                              <p className="truncate text-white/35">
+                                <span className="text-white/20">Email: </span>
+                                {form.email || "Your email"}
+                              </p>
+
+                              <p className="truncate text-white/35">
+                                <span className="text-white/20">Service: </span>
+                                {SERVICES.find(
+                                  (service) => service.id === form.service
+                                )?.label || "Not selected"}
+                              </p>
+
+                              <p className="truncate text-white/35">
+                                <span className="text-white/20">
+                                  Timeline:{" "}
+                                </span>
+                                {TIMELINES.find(
+                                  (timeline) => timeline.id === form.timeline
+                                )?.label || "Not selected"}
+                              </p>
+                            </div>
                           </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
 
-                    {/* Navigation Buttons */}
-                    <div className={`mt-8 flex ${step > 0 ? "justify-between" : "justify-end"}`}>
-                      {step > 0 && (
+                    <div className="mt-9 flex items-center justify-between border-t border-white/[0.06] pt-6">
+                      {step > 0 ? (
                         <motion.button
                           type="button"
                           onClick={back}
                           whileTap={{ scale: 0.97 }}
-                          className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-colors"
-                          style={{
-                            color: "rgba(255,255,255,0.4)",
-                            border: "1px solid rgba(255,255,255,0.08)",
-                            background: "transparent",
-                          }}
+                          className="flex items-center gap-2 rounded-xl border border-white/[0.08] px-4 py-2.5 text-xs text-white/40 transition hover:border-white/15 hover:text-white/70"
                         >
-                          <FiArrowLeft size={13} />
+                          <FiArrowLeft size={12} />
                           Back
                         </motion.button>
+                      ) : (
+                        <span className="font-mono text-[8px] uppercase tracking-[0.16em] text-white/15">
+                          Step {step + 1} of {STEPS.length}
+                        </span>
                       )}
 
                       {step < STEPS.length - 1 ? (
                         <motion.button
                           type="button"
                           onClick={next}
-                          whileHover={{ scale: 1.02 }}
+                          whileHover={{ y: -1 }}
                           whileTap={{ scale: 0.97 }}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                          style={{
-                            background: "linear-gradient(135deg, #4f46e5, #7c3aed)",
-                            boxShadow: "0 0 18px rgba(99,102,241,0.28)",
-                          }}
+                          className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,.22)] transition hover:bg-primary/90"
                         >
                           Continue
-                          <FiArrowRight size={13} />
+                          <FiArrowRight size={12} />
                         </motion.button>
                       ) : (
                         <motion.button
                           type="submit"
                           disabled={loading}
-                          whileHover={loading ? {} : { scale: 1.02, boxShadow: "0 0 28px rgba(99,102,241,0.45)" }}
-                          whileTap={{ scale: 0.97 }}
-                          className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
-                          style={{
-                            background: loading
-                              ? "rgba(99,102,241,0.4)"
-                              : "linear-gradient(135deg, #4f46e5, #7c3aed)",
-                            boxShadow: "0 0 18px rgba(99,102,241,0.25)",
-                            cursor: loading ? "not-allowed" : "pointer",
-                          }}
+                          whileHover={loading ? {} : { y: -1 }}
+                          whileTap={loading ? {} : { scale: 0.97 }}
+                          className="flex items-center gap-2 rounded-xl bg-primary px-5 py-3 text-xs font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,.22)] transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
                         >
                           {loading ? (
                             <>
                               <motion.span
-                                className="w-3 h-3 rounded-full border border-white/40 border-t-white"
+                                className="h-3 w-3 rounded-full border border-white/30 border-t-white"
                                 animate={{ rotate: 360 }}
-                                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
+                                transition={{
+                                  duration: 0.7,
+                                  repeat: Infinity,
+                                  ease: "linear",
+                                }}
                               />
                               Sending…
                             </>
                           ) : (
                             <>
-                              Send message
+                              Send inquiry
                               <FiSend size={12} />
                             </>
                           )}
@@ -897,6 +1026,13 @@ const Contact = () => {
               )}
             </AnimatePresence>
           </motion.div>
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-2">
+          <FiExternalLink size={10} className="text-white/15" />
+          <span className="font-mono text-[8px] uppercase tracking-[0.18em] text-white/15">
+            Your information is used only to respond to your inquiry
+          </span>
         </div>
       </div>
     </section>

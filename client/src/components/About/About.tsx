@@ -1,8 +1,13 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { FiMapPin, FiCalendar, FiStar } from "react-icons/fi";
+import {
+  FiArrowUpRight,
+  FiBriefcase,
+  FiCalendar,
+  FiChevronRight,
+  FiMapPin,
+  FiStar,
+} from "react-icons/fi";
 import { SectionHeading } from "./SectionHeading";
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 interface Experience {
   period: string;
@@ -14,11 +19,9 @@ interface Experience {
   achievements?: string[];
 }
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
-
 const experiences: Experience[] = [
   {
-    period: "2026 — Present", // ← replace with real start date
+    period: "2026 — Present",
     role: "Full Stack Developer",
     company: "Astute Business Partners",
     location: "Sri Lanka",
@@ -56,7 +59,7 @@ const experiences: Experience[] = [
   },
   {
     period: "July 2024 — January 2025",
-    role: "Junior Full-Stack Engineer",
+    role: "Intern Full-Stack Engineer",
     company: "DMS Software Technologies PVT LTD",
     location: "Sri Lanka",
     highlights: [
@@ -70,63 +73,22 @@ const experiences: Experience[] = [
   },
 ];
 
-// ─── Sidebar stats ────────────────────────────────────────────────────────────
-
 const sidebarStats = [
-  { label: "Focus", value: "Full Stack Engineering" },
-  { label: "Stack", value: "MERN · FastAPI" },
+  { label: "Primary focus", value: "Full Stack" },
+  { label: "Core stack", value: "MERN · FastAPI" },
   { label: "Languages", value: "TS · Python · Java" },
-  { label: "Status", value: "Available" },
+  { label: "Availability", value: "Open" },
 ];
 
-// ─── Design tokens ────────────────────────────────────────────────────────────
-// Centralised so the indigo accent palette only needs to change in one place.
-
 const ACCENT = "#6366F1";
-const ACCENT_LIGHT = "#818CF8"; // company labels, achievement heading
-const ACCENT_LIGHTEST = "#A5B4FC"; // "Current" badge text
-
-const GLOW_SM = "0 0 5px rgba(99,102,241,1)";
-const GLOW_MD = "0 0 6px rgba(99,102,241,0.6)";
-const GLOW_LG = "0 0 8px rgba(99,102,241,0.7)";
-
-const BORDER_ACCENT = "rgba(99,102,241,0.25)"; // current-role card, resting
-const BORDER_ACCENT_HOVER = "rgba(99,102,241,0.35)"; // hover state, all cards
-const BORDER_ACCENT_SOFT = "rgba(99,102,241,0.15)"; // achievements box
-const BORDER_ACCENT_BADGE = "rgba(99,102,241,0.3)"; // "Current" badge
-const BG_ACCENT = "rgba(99,102,241,0.05)"; // current-role card fill
-const BG_ACCENT_SOFT = "rgba(99,102,241,0.07)"; // achievements fill + ambient glow
-const BG_ACCENT_BADGE = "rgba(99,102,241,0.12)"; // "Current" badge fill
-const SHADOW_ACCENT_HOVER = "0 12px 48px rgba(99,102,241,0.08)";
-const DOT_BULLET_INACTIVE = "rgba(99,102,241,0.35)";
-const DOT_TIMELINE_INACTIVE = "rgba(99,102,241,0.4)";
-
-const HAIRLINE = "rgba(255,255,255,0.07)";
-const HAIRLINE_SOFT = "rgba(255,255,255,0.05)";
-const BORDER_RAIL = "rgba(255,255,255,0.08)"; // timeline spine
-const SURFACE = "rgba(255,255,255,0.03)"; // sidebar card
-const SURFACE_SOFT = "rgba(255,255,255,0.025)"; // non-current card
-const BORDER_NEUTRAL = "rgba(255,255,255,0.06)"; // non-current card
-
-// ─── Animation helpers ────────────────────────────────────────────────────────
-// Every helper accepts a `reduced` flag so the whole timeline can collapse to
-// simple opacity fades when the user has requested less motion.
+const ACCENT_LIGHT = "#A5B4FC";
+const LINE = "rgba(255,255,255,0.08)";
+const SURFACE = "rgba(255,255,255,0.035)";
 
 const fadeUp = (delay = 0, reduced = false) => ({
-  initial: reduced ? { opacity: 0 } : { opacity: 0, y: 24 },
+  initial: reduced ? { opacity: 0 } : { opacity: 0, y: 22 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: {
-    duration: reduced ? 0.3 : 0.75,
-    delay: reduced ? 0 : delay,
-    ease: [0.22, 1, 0.36, 1] as const,
-  },
-});
-
-const slideIn = (delay = 0, reduced = false) => ({
-  initial: reduced ? { opacity: 0 } : { opacity: 0, x: 32 },
-  whileInView: { opacity: 1, x: 0 },
-  viewport: { once: true },
+  viewport: { once: true, amount: 0.15 },
   transition: {
     duration: reduced ? 0.3 : 0.7,
     delay: reduced ? 0 : delay,
@@ -134,357 +96,367 @@ const slideIn = (delay = 0, reduced = false) => ({
   },
 });
 
-// Small cascading reveal used for list items inside an already-visible card.
-const revealItem = (index: number, reduced = false) => ({
-  initial: reduced ? { opacity: 0 } : { opacity: 0, y: 6 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: {
-    duration: reduced ? 0.2 : 0.35,
-    delay: reduced ? 0 : Math.min(index * 0.05, 0.3),
-    ease: "easeOut" as const,
-  },
-});
-
-// ─── Sub-components ───────────────────────────────────────────────────────────
-
-function Bullet({ active = false }: { active?: boolean }) {
+function ExperienceNumber({ index, current }: { index: number; current?: boolean }) {
   return (
-    <span
-      aria-hidden="true"
-      className="mt-1.75 flex h-1.75 w-1.75 shrink-0 rounded-full"
-      style={{
-        background: active ? ACCENT : DOT_BULLET_INACTIVE,
-        boxShadow: active ? GLOW_MD : "none",
-      }}
-    />
-  );
-}
-
-function TimelineDot({
-  active = false,
-  reducedMotion = false,
-}: {
-  active?: boolean;
-  reducedMotion?: boolean;
-}) {
-  return (
-    <span
-      aria-hidden="true"
-      className="absolute -left-6.5 top-6 flex h-3 w-3 items-center justify-center sm:-left-9.5 sm:top-7"
-    >
-      {active && !reducedMotion && (
-        <span
-          className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-50"
-          style={{ background: ACCENT }}
-        />
-      )}
+    <div className="absolute -left-[17px] top-0 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-[#0A0A0F] sm:-left-[21px]">
       <span
-        className="relative inline-flex h-3 w-3 rounded-full"
-        style={{
-          background: active ? ACCENT : DOT_TIMELINE_INACTIVE,
-          boxShadow: active ? GLOW_LG : "none",
-        }}
-      />
-    </span>
+        className="font-mono text-[9px]"
+        style={{ color: current ? ACCENT_LIGHT : "rgba(255,255,255,.3)" }}
+      >
+        {String(index + 1).padStart(2, "0")}
+      </span>
+    </div>
   );
 }
 
 function CurrentBadge() {
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[10px] font-medium uppercase tracking-[0.2em]"
+      className="inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[9px] font-semibold uppercase tracking-[0.18em]"
       style={{
-        background: BG_ACCENT_BADGE,
-        border: `1px solid ${BORDER_ACCENT_BADGE}`,
-        color: ACCENT_LIGHTEST,
+        borderColor: "rgba(99,102,241,.28)",
+        background: "rgba(99,102,241,.09)",
+        color: ACCENT_LIGHT,
       }}
     >
       <span
-        aria-hidden="true"
         className="h-1.5 w-1.5 rounded-full"
-        style={{ background: ACCENT, boxShadow: GLOW_SM }}
+        style={{
+          background: ACCENT,
+          boxShadow: "0 0 8px rgba(99,102,241,.9)",
+        }}
       />
       Current
     </span>
   );
 }
 
-// ─── Main component ───────────────────────────────────────────────────────────
+function ExperienceCard({
+  item,
+  index,
+  reducedMotion,
+}: {
+  item: Experience;
+  index: number;
+  reducedMotion: boolean;
+}) {
+  return (
+    <motion.article
+      {...fadeUp(index * 0.08, reducedMotion)}
+      className="group relative"
+    >
+      <ExperienceNumber index={index} current={item.current} />
+
+      <motion.div
+        whileHover={reducedMotion ? {} : { y: -3 }}
+        transition={{ duration: 0.25 }}
+        className="relative overflow-hidden rounded-2xl border p-5 sm:p-7"
+        style={{
+          borderColor: item.current
+            ? "rgba(99,102,241,.28)"
+            : "rgba(255,255,255,.075)",
+          background: item.current
+            ? "linear-gradient(145deg, rgba(99,102,241,.075), rgba(255,255,255,.025))"
+            : SURFACE,
+          backdropFilter: "blur(14px)",
+        }}
+      >
+        {/* Top accent */}
+        <div
+          className="absolute left-0 top-0 h-px w-0 transition-all duration-500 group-hover:w-full"
+          style={{ background: `linear-gradient(90deg, ${ACCENT}, transparent)` }}
+        />
+
+        <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
+          <div className="min-w-0">
+            <div className="mb-3 flex flex-wrap items-center gap-2.5">
+              {item.current && <CurrentBadge />}
+
+              <span className="text-[10px] uppercase tracking-[0.2em] text-white/25">
+                {item.period}
+              </span>
+            </div>
+
+            <h3 className="text-xl font-semibold tracking-tight text-white sm:text-2xl">
+              {item.role}
+            </h3>
+
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs">
+              <span style={{ color: ACCENT_LIGHT }}>{item.company}</span>
+
+              <span className="text-white/15">/</span>
+
+              <span className="flex items-center gap-1.5 text-white/35">
+                <FiMapPin size={10} />
+                {item.location}
+              </span>
+            </div>
+          </div>
+
+          <div
+            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-white/[0.07] bg-white/[0.025] text-white/20 transition group-hover:border-indigo-400/20 group-hover:text-indigo-300 md:flex"
+            aria-hidden="true"
+          >
+            <FiArrowUpRight size={15} />
+          </div>
+        </div>
+
+        <div className="my-6 h-px bg-white/[0.06]" />
+
+        <div className="grid gap-6 lg:grid-cols-[1fr_auto]">
+          <div>
+            <p className="mb-3 text-[9px] font-medium uppercase tracking-[0.24em] text-white/25">
+              Responsibilities
+            </p>
+
+            <ul className="space-y-3">
+              {item.highlights.map((point) => (
+                <li key={point} className="flex items-start gap-3">
+                  <span
+                    className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full"
+                    style={{
+                      background: item.current
+                        ? ACCENT
+                        : "rgba(99,102,241,.4)",
+                      boxShadow: item.current
+                        ? "0 0 7px rgba(99,102,241,.55)"
+                        : "none",
+                    }}
+                  />
+
+                  <p className="text-sm leading-6 text-white/55">{point}</p>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {item.achievements && item.achievements.length > 0 && (
+            <div className="lg:w-[230px]">
+              <div
+                className="rounded-xl border p-4"
+                style={{
+                  borderColor: "rgba(99,102,241,.15)",
+                  background: "rgba(99,102,241,.045)",
+                }}
+              >
+                <p
+                  className="mb-3 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.2em]"
+                  style={{ color: ACCENT_LIGHT }}
+                >
+                  <FiStar size={11} />
+                  Key impact
+                </p>
+
+                <ul className="space-y-3">
+                  {item.achievements.map((achievement) => (
+                    <li key={achievement} className="flex items-start gap-2">
+                      <FiChevronRight
+                        size={12}
+                        className="mt-1 shrink-0"
+                        style={{ color: ACCENT }}
+                      />
+                      <span className="text-xs leading-5 text-white/55">
+                        {achievement}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </motion.article>
+  );
+}
 
 const About = () => {
-  // Collapses every animation in this section to a simple fade when the user
-  // has "Reduce motion" enabled at the OS/browser level.
   const reducedMotion = useReducedMotion() ?? false;
 
   return (
     <section
       id="about"
-      className="relative py-20 sm:py-28 lg:py-32"
-      style={{ background: "#0A0A0F" }}
+      className="relative overflow-hidden bg-[#0A0A0F] py-24 sm:py-32 lg:py-36"
     >
-      {/* Faint ambient glow */}
+      {/* Ambient background */}
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-0 -z-10 h-100 w-150 -translate-x-1/2"
+        className="pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[700px] -translate-x-1/2 rounded-full blur-[120px]"
         style={{
-          background: `radial-gradient(ellipse at center, ${BG_ACCENT_SOFT} 0%, transparent 70%)`,
+          background:
+            "radial-gradient(circle, rgba(99,102,241,.09), transparent 68%)",
         }}
       />
 
-      <div className="mx-auto max-w-7xl px-6">
-        {/* Heading */}
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <SectionHeading
           index="01"
           eyebrow="Experience"
           title={
             <>
-              Engineering products with{" "}
-              <em className="italic text-gradient">precision</em> and
-              scalability.
+              Building software with{" "}
+              <em className="italic text-gradient">purpose.</em>
             </>
           }
-          description="Full-stack software engineer with hands-on experience building enterprise systems, MERN platforms, scalable APIs, and production-ready interfaces across modern web stacks."
+          description="Full-stack software engineer with hands-on experience across enterprise systems, MERN platforms, scalable APIs, and production-ready interfaces."
         />
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12">
-          {/* ── Sidebar ── */}
-          <motion.div
-            {...fadeUp(0.05, reducedMotion)}
-            className="lg:col-span-4"
+        {/* Intro strip */}
+        <motion.div
+          {...fadeUp(0.05, reducedMotion)}
+          className="mb-12 flex flex-col justify-between gap-5 border-y border-white/[0.07] py-5 sm:flex-row sm:items-center"
+        >
+          <div className="flex items-center gap-3">
+            <span
+              className="flex h-9 w-9 items-center justify-center rounded-xl border"
+              style={{
+                borderColor: "rgba(99,102,241,.2)",
+                background: "rgba(99,102,241,.07)",
+                color: ACCENT_LIGHT,
+              }}
+            >
+              <FiBriefcase size={15} />
+            </span>
+
+            <div>
+              <p className="text-sm font-medium text-white/80">
+                Professional journey
+              </p>
+              <p className="mt-0.5 text-xs text-white/30">
+                Most recent experience first
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-white/25">
+            <span
+              className="h-1.5 w-1.5 rounded-full"
+              style={{ background: ACCENT }}
+            />
+            3+ years building
+          </div>
+        </motion.div>
+
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-[280px_1fr] lg:gap-20">
+          {/* Sidebar */}
+          <motion.aside
+            {...fadeUp(0.1, reducedMotion)}
+            className="lg:sticky lg:top-28 lg:h-fit"
           >
             <div
-              className="rounded-2xl p-6 sm:p-8 lg:sticky lg:top-28"
+              className="rounded-2xl border p-6"
               style={{
-                background: SURFACE,
-                border: `1px solid ${HAIRLINE}`,
+                borderColor: LINE,
+                background: "rgba(255,255,255,.025)",
                 backdropFilter: "blur(12px)",
               }}
             >
-              {/* Quote */}
               <p
-                className="text-[10px] uppercase tracking-[0.28em]"
-                style={{ color: ACCENT }}
+                className="text-[9px] font-semibold uppercase tracking-[0.25em]"
+                style={{ color: ACCENT_LIGHT }}
               >
-                Philosophy
+                Engineering mindset
               </p>
 
-              <p className="mt-5 text-xl font-semibold leading-snug text-white sm:text-2xl">
-                "Software is not only engineering — it is clarity, structure,
-                and experience."
+              <h3 className="mt-5 text-2xl font-semibold leading-tight tracking-tight text-white">
+                Clarity first.
+                <br />
+                Quality always.
+              </h3>
+
+              <p className="mt-4 text-sm leading-6 text-white/40">
+                I enjoy turning complex requirements into systems that are
+                reliable, maintainable, and intuitive to use.
               </p>
 
-              <hr
-                aria-hidden="true"
-                className="my-6 border-none sm:my-7"
-                style={{ height: "1px", background: HAIRLINE }}
-              />
+              <div className="my-7 h-px bg-white/[0.07]" />
 
-              {/* Stats */}
-              <dl className="grid grid-cols-2 gap-x-6 gap-y-5 text-sm">
+              <dl className="space-y-5">
                 {sidebarStats.map(({ label, value }) => (
-                  <div key={label}>
-                    <dt className="text-[11px] uppercase tracking-[0.2em] text-white/40">
+                  <div
+                    key={label}
+                    className="flex items-start justify-between gap-4"
+                  >
+                    <dt className="text-[10px] uppercase tracking-[0.16em] text-white/25">
                       {label}
                     </dt>
-                    <dd className="mt-1.5 font-medium text-white/90">
-                      {value === "Available" ? (
-                        <span className="flex items-center gap-2">
-                          <span
-                            aria-hidden="true"
-                            className="h-1.5 w-1.5 rounded-full"
-                            style={{ background: ACCENT, boxShadow: GLOW_SM }}
-                          />
-                          {value}
-                        </span>
-                      ) : (
-                        value
+
+                    <dd
+                      className="text-right text-xs font-medium"
+                      style={{
+                        color:
+                          value === "Open"
+                            ? ACCENT_LIGHT
+                            : "rgba(255,255,255,.7)",
+                      }}
+                    >
+                      {value === "Open" && (
+                        <span
+                          className="mr-1.5 inline-block h-1.5 w-1.5 rounded-full"
+                          style={{
+                            background: ACCENT,
+                            boxShadow: "0 0 7px rgba(99,102,241,.7)",
+                          }}
+                        />
                       )}
+                      {value}
                     </dd>
                   </div>
                 ))}
               </dl>
 
-              {/* Year count */}
-              <hr
-                aria-hidden="true"
-                className="my-6 border-none sm:my-7"
-                style={{ height: "1px", background: HAIRLINE }}
-              />
-
-              <div className="flex items-end justify-between">
-                <div>
-                  <p
-                    className="font-display text-4xl font-black sm:text-5xl"
-                    style={{
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      color: ACCENT,
-                    }}
-                  >
-                    3+
-                  </p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/40">
-                    Years building
-                  </p>
-                </div>
-
-                <div className="text-right">
-                  <p
-                    className="font-display text-4xl font-black sm:text-5xl"
-                    style={{
-                      fontFamily: "'Barlow Condensed', sans-serif",
-                      color: ACCENT,
-                    }}
-                  >
-                    3
-                  </p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-white/40">
-                    Companies
-                  </p>
+              <div
+                className="mt-7 rounded-xl border p-4"
+                style={{
+                  borderColor: "rgba(255,255,255,.06)",
+                  background: "rgba(0,0,0,.12)",
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <FiCalendar size={12} className="text-white/25" />
+                  <span className="text-[9px] uppercase tracking-[0.2em] text-white/25">
+                    Timeline
+                  </span>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </motion.aside>
 
-          {/* ── Timeline ── */}
-          <div className="lg:col-span-8">
-            <ol
-              aria-label="Work experience timeline, most recent first"
-              className="relative space-y-8 pl-5 sm:pl-8"
-              style={{ borderLeft: `1px solid ${BORDER_RAIL}` }}
-            >
-              {experiences.map((item, i) => {
-                const cardBorder = item.current ? BORDER_ACCENT : BORDER_NEUTRAL;
-                const cardBg = item.current ? BG_ACCENT : SURFACE_SOFT;
+          {/* Experience list */}
+          <div className="relative pl-5 sm:pl-8">
+            <div
+              aria-hidden="true"
+              className="absolute bottom-2 left-[15px] top-2 w-px sm:left-[19px]"
+              style={{
+                background:
+                  "linear-gradient(to bottom, rgba(99,102,241,.55), rgba(255,255,255,.08) 85%, transparent)",
+              }}
+            />
 
-                return (
-                  <motion.li
-                    key={`${item.role}-${item.company}`}
-                    {...slideIn(i * 0.1, reducedMotion)}
-                    className="relative"
-                  >
-                    <TimelineDot active={item.current} reducedMotion={reducedMotion} />
-
-                    {/* Card — hover state is driven by Framer Motion instead of
-                        manual DOM mutation, so it stays in sync with React and
-                        respects the reduced-motion setting automatically. */}
-                    <motion.div
-                      className="rounded-2xl p-5 sm:p-7"
-                      style={{
-                        background: cardBg,
-                        borderWidth: 1,
-                        borderStyle: "solid",
-                        borderColor: cardBorder,
-                        backdropFilter: "blur(10px)",
-                      }}
-                      whileHover={{
-                        borderColor: BORDER_ACCENT_HOVER,
-                        boxShadow: SHADOW_ACCENT_HOVER,
-                      }}
-                      transition={{ duration: 0.35, ease: "easeOut" }}
-                    >
-                      {/* Header */}
-                      <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-                        <div className="flex flex-col gap-2">
-                          <div className="flex flex-wrap items-center gap-3">
-                            <h3 className="text-lg font-semibold text-white sm:text-xl">
-                              {item.role}
-                            </h3>
-                            {item.current && <CurrentBadge />}
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-3 text-[11px] uppercase tracking-[0.2em]">
-                            <span style={{ color: ACCENT_LIGHT }}>{item.company}</span>
-                            <span className="flex items-center gap-1 text-white/40">
-                              <FiMapPin aria-hidden="true" size={10} />
-                              {item.location}
-                            </span>
-                          </div>
-                        </div>
-
-                        <span className="flex shrink-0 items-center gap-1.5 text-[11px] uppercase tracking-[0.22em] text-white/40">
-                          <FiCalendar aria-hidden="true" size={11} />
-                          {item.period}
-                        </span>
-                      </div>
-
-                      {/* Divider */}
-                      <hr
-                        aria-hidden="true"
-                        className="my-5 border-none"
-                        style={{ height: "1px", background: HAIRLINE_SOFT }}
-                      />
-
-                      {/* Highlights */}
-                      <ul className="space-y-3">
-                        {item.highlights.map((point, idx) => (
-                          <motion.li
-                            key={point}
-                            {...revealItem(idx, reducedMotion)}
-                            className="flex items-start gap-3"
-                          >
-                            <Bullet active={item.current} />
-                            <p className="text-sm leading-relaxed text-white/65">
-                              {point}
-                            </p>
-                          </motion.li>
-                        ))}
-                      </ul>
-
-                      {/* Key Achievements — only if present */}
-                      {item.achievements && item.achievements.length > 0 && (
-                        <div
-                          className="mt-6 rounded-xl p-4 sm:p-5"
-                          style={{
-                            background: BG_ACCENT_SOFT,
-                            border: `1px solid ${BORDER_ACCENT_SOFT}`,
-                          }}
-                        >
-                          <p
-                            className="mb-3 flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.25em]"
-                            style={{ color: ACCENT_LIGHT }}
-                          >
-                            <FiStar aria-hidden="true" size={11} />
-                            Key achievements
-                          </p>
-
-                          <ul className="space-y-2.5">
-                            {item.achievements.map((a, idx) => (
-                              <motion.li
-                                key={a}
-                                {...revealItem(idx, reducedMotion)}
-                                className="flex items-start gap-3"
-                              >
-                                <span
-                                  aria-hidden="true"
-                                  className="mt-1.75 h-1.25 w-1.25 shrink-0 rounded-full"
-                                  style={{ background: ACCENT }}
-                                />
-                                <p className="text-sm leading-relaxed text-white/75">
-                                  {a}
-                                </p>
-                              </motion.li>
-                            ))}
-                          </ul>
-                        </div>
-                      )}
-                    </motion.div>
-                  </motion.li>
-                );
-              })}
-
-              {/* Timeline cap */}
-              <li className="relative pl-1 pt-2">
-                <span
-                  aria-hidden="true"
-                  className="absolute -left-1.25 top-3 h-2.5 w-2.5 rounded-full"
-                  style={{ background: "rgba(255,255,255,0.12)" }}
+            <div className="space-y-7">
+              {experiences.map((item, index) => (
+                <ExperienceCard
+                  key={`${item.role}-${item.company}`}
+                  item={item}
+                  index={index}
+                  reducedMotion={reducedMotion}
                 />
-                <p className="text-[11px] uppercase tracking-[0.25em] text-white/30">
-                  Career start
-                </p>
-              </li>
-            </ol>
+              ))}
+            </div>
+
+            {/* Career start */}
+            <motion.div
+              {...fadeUp(0.25, reducedMotion)}
+              className="relative mt-8 flex items-center gap-4 pl-1"
+            >
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ background: "rgba(255,255,255,.15)" }}
+              />
+              <span className="text-[9px] uppercase tracking-[0.25em] text-white/20">
+                Career start
+              </span>
+            </motion.div>
           </div>
         </div>
       </div>
