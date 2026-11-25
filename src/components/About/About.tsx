@@ -21,7 +21,7 @@ interface Experience {
 
 const experiences: Experience[] = [
   {
-    period: "2026 — Present",
+    period: "2026 April — 2026 July",
     role: "Full Stack Developer",
     company: "Astute Business Partners",
     location: "Sri Lanka",

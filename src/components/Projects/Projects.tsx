@@ -1,4 +1,4 @@
-import { motion, useAnimationControls, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { FiArrowUpRight, FiGithub, FiX } from "react-icons/fi";
 import { SectionHeading } from "../About/SectionHeading";
 import { useState, useEffect, useRef, useCallback } from "react";
@@ -80,7 +80,6 @@ const projects = [
     stack: ["MongoDB", "Express", "React", "Node.js"],
     image: project8, github: "#", live: "#", accent: P.cream,
   },
-
   {
     n: "09", title: "Zumba Fitness", tag: "Web Design · React",
     blurb: "A vibrant fitness web application prototype with interactive workout routines, class scheduling, and user engagement features.",
@@ -90,18 +89,30 @@ const projects = [
 ];
 
 const TOTAL = projects.length;
-const ORBIT_DURATION = 32; // seconds for one full rotation
+// Full loop duration in seconds — slower / more relaxed than the old 32s orbit.
+const LOOP_DURATION = 55;
 
 /* ─────────────────────────────────────────────
-   ORBIT MATH
-   Each card sits at angle = baseAngle + index * (360/TOTAL)
-   We rotate the whole system by animating baseAngle.
+   RESPONSIVE SIZING
+   Instead of 3 fixed breakpoints (which used to "jump"
+   at 640px / 1024px), every dimension is linearly
+   interpolated between a mobile value and a desktop
+   value based on the arena's actual measured width.
+   This removes the visible snap at breakpoints.
 ───────────────────────────────────────────── */
-function getOrbitPos(angleDeg: number, rx: number, ry: number) {
-  const rad = (angleDeg * Math.PI) / 180;
+const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
+
+function getResponsiveSizes(width: number) {
+  // t = 0 at narrow phones, t = 1 at large desktop; smoothly interpolated in between.
+  const t = clamp01((width - 360) / (1400 - 360));
+
   return {
-    x: rx * Math.cos(rad),
-    y: ry * Math.sin(rad),
+    cardW: lerp(132, 200, t),
+    cardH: lerp(96, 134, t),
+    gap: lerp(14, 32, t),
+    arcHeight: lerp(18, 56, t),
+    arenaPaddingY: lerp(70, 120, t),
   };
 }
 
@@ -251,45 +262,60 @@ function ProjectModal({ project, onClose }: { project: Project | null; onClose: 
 }
 
 /* ─────────────────────────────────────────────
-   ORBIT CARD  (individual card node)
+   CAROUSEL CARD
+   Cards travel left → right along a horizontal
+   track that gently arcs upward through the
+   centre of the arena (a shallow dome), rather
+   than a full ellipse orbit.
 ───────────────────────────────────────────── */
-function OrbitCard({
-  project, angleDeg, rx, ry, paused, onClick,
+function CarouselCard({
+  project, x, arenaWidth, cardW, cardH, arcHeight, onClick,
 }: {
   project: Project;
-  angleDeg: number;
-  rx: number;
-  ry: number;
-  paused: boolean;
+  x: number;
+  arenaWidth: number;
+  cardW: number;
+  cardH: number;
+  arcHeight: number;
   onClick: () => void;
 }) {
-  const { x, y } = getOrbitPos(angleDeg, rx, ry);
-  // Cards in the "back" (positive y = bottom of ellipse in screen space) are smaller/dimmer
-  const depth = Math.sin((angleDeg * Math.PI) / 180); // -1 … 1
-  const scale = 0.72 + 0.28 * ((depth + 1) / 2);      // 0.72 → 1.0
-  const opacity = 0.45 + 0.55 * ((depth + 1) / 2);    // 0.45 → 1.0
-  const zIndex = Math.round(10 + depth * 10);
-
   const [hovered, setHovered] = useState(false);
 
+  // Normalized horizontal position relative to the arena centre, roughly -1 … 1
+  // across the visible width (can exceed that range just off-screen — fine).
+  const center = arenaWidth / 2;
+  const norm = (x + cardW / 2 - center) / (center || 1);
+  const clampedNorm = Math.max(-1.3, Math.min(1.3, norm));
+
+  // Shallow dome: highest (most negative y) at the centre, settles to 0 at the edges.
+  const y = -arcHeight * (1 - Math.min(1, clampedNorm * clampedNorm));
+
+  const depth = 1 - Math.min(1, Math.abs(clampedNorm));
+  const scale = 0.78 + 0.22 * depth;
+  const opacity = 0.4 + 0.6 * depth;
+  const zIndex = Math.round(10 + depth * 20);
+
   return (
-    <motion.div
-      animate={{ x, y, scale, opacity }}
-      transition={{ type: "tween", ease: "linear", duration: 0 }}
+    <div
       style={{
         position: "absolute",
-        top: "50%", left: "50%",
-        marginLeft: -90, marginTop: -64,
-        width: 180, height: 128,
+        top: "50%",
+        left: 0,
+        width: cardW,
+        height: cardH,
+        marginTop: -cardH / 2,
+        transform: `translate3d(${x}px, ${y}px, 0) scale(${scale})`,
+        opacity,
         zIndex: hovered ? 50 : zIndex,
         cursor: "pointer",
+        willChange: "transform",
       }}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       onClick={onClick}
     >
       <motion.div
-        animate={{ scale: hovered ? 1.08 : 1 }}
+        animate={{ scale: hovered ? 1.07 : 1 }}
         transition={{ duration: 0.25 }}
         style={{
           width: "100%", height: "100%",
@@ -343,23 +369,23 @@ function OrbitCard({
           userSelect: "none",
         }}>{project.n}</span>
       </motion.div>
-    </motion.div>
+    </div>
   );
 }
 
 /* ─────────────────────────────────────────────
-   ORBIT RING  (SVG ellipse visual)
+   TRACK LINE  (subtle arc visual under the cards)
 ───────────────────────────────────────────── */
-function OrbitRing({ rx, ry }: { rx: number; ry: number }) {
+function ArcTrack({ arenaWidth, arcHeight, centerY }: { arenaWidth: number; arcHeight: number; centerY: number }) {
+  if (!arenaWidth) return null;
+  const midX = arenaWidth / 2;
+  const d = `M 0 ${centerY} Q ${midX} ${centerY - arcHeight * 2} ${arenaWidth} ${centerY}`;
   return (
     <svg
-      style={{ position: "absolute", top: "50%", left: "50%", overflow: "visible", pointerEvents: "none" }}
-      width={0} height={0}
+      style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "visible" }}
+      width={arenaWidth} height={centerY * 2}
     >
-      <ellipse cx={0} cy={0} rx={rx} ry={ry}
-        fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={1} />
-      <ellipse cx={0} cy={0} rx={rx * 0.6} ry={ry * 0.6}
-        fill="none" stroke="rgba(255,255,255,0.025)" strokeWidth={1} strokeDasharray="4 8" />
+      <path d={d} fill="none" stroke="rgba(255,255,255,0.04)" strokeWidth={1} />
     </svg>
   );
 }
@@ -368,41 +394,55 @@ function OrbitRing({ rx, ry }: { rx: number; ry: number }) {
    MAIN SECTION
 ───────────────────────────────────────────── */
 const Projects = () => {
-  const [angle, setAngle] = useState(0);           // degrees, continuously increasing
+  const [scrollX, setScrollX] = useState(0);
   const [paused, setPaused] = useState(false);
   const [selected, setSelected] = useState<Project | null>(null);
+  const [arenaWidth, setArenaWidth] = useState(0);
+  const [sizes, setSizes] = useState(() => getResponsiveSizes(1200));
+
+  const arenaRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
 
-  // Orbit radii — responsive via CSS container width
-  const [orbitSize, setOrbitSize] = useState({ rx: 380, ry: 160 });
-
+  // Continuous, smooth responsive measurement — no stepped breakpoints.
   useEffect(() => {
-    const measure = () => {
-      const w = window.innerWidth;
-      if (w < 640) setOrbitSize({ rx: 140, ry: 90 });
-      else if (w < 1024) setOrbitSize({ rx: 260, ry: 120 });
-      else setOrbitSize({ rx: 380, ry: 160 });
+    const el = arenaRef.current;
+    if (!el) return;
+
+    const update = (width: number) => {
+      setArenaWidth(width);
+      setSizes(getResponsiveSizes(width));
     };
-    measure();
-    window.addEventListener("resize", measure);
-    return () => window.removeEventListener("resize", measure);
+
+    update(el.clientWidth);
+
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        update(entry.contentRect.width);
+      }
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
   }, []);
 
-  // RAF-based rotation
+  const { cardW, cardH, gap, arcHeight, arenaPaddingY } = sizes;
+  const step = cardW + gap;
+  const trackWidth = step * TOTAL;
+
+  // RAF-based horizontal scroll — slower, more relaxed pace than the old orbit.
   useEffect(() => {
-    if (paused || selected) {
+    if (paused || selected || trackWidth === 0) {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
       lastTimeRef.current = null;
       return;
     }
 
-    const degsPerMs = 360 / (ORBIT_DURATION * 1000);
+    const pxPerMs = trackWidth / (LOOP_DURATION * 1000);
 
     const tick = (timestamp: number) => {
       if (lastTimeRef.current !== null) {
         const delta = timestamp - lastTimeRef.current;
-        setAngle((a) => (a + degsPerMs * delta) % 360);
+        setScrollX((x) => (x + pxPerMs * delta) % trackWidth);
       }
       lastTimeRef.current = timestamp;
       rafRef.current = requestAnimationFrame(tick);
@@ -410,7 +450,7 @@ const Projects = () => {
 
     rafRef.current = requestAnimationFrame(tick);
     return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); };
-  }, [paused, selected]);
+  }, [paused, selected, trackWidth]);
 
   const handleCardClick = useCallback((p: Project) => {
     setPaused(true);
@@ -422,9 +462,12 @@ const Projects = () => {
     setPaused(false);
   }, []);
 
-  const { rx, ry } = orbitSize;
-  // Orbit arena height
-  const arenaH = ry * 2 + 200;
+  const arenaH = cardH + arcHeight * 2 + arenaPaddingY;
+  const centerY = arenaH / 2;
+
+  // Duplicate the set so the loop reads as continuous (second copy fills in
+  // behind the first as it scrolls off to the left).
+  const trackItems = [...projects, ...projects];
 
   return (
     <section id="projects" style={{ padding: "120px 0", background: P.bg, color: P.cream }}>
@@ -437,54 +480,37 @@ const Projects = () => {
           description="A curated collection of full-stack, AI, mobile, and design-focused applications built across MERN, Python, Java, and modern UI systems."
         />
 
-        {/* ── Orbit arena ── */}
+        {/* ── Carousel arena ── */}
         <div
+          ref={arenaRef}
           style={{
             position: "relative",
             height: arenaH,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            overflow: "hidden",
           }}
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => !selected && setPaused(false)}
         >
-          {/* Ring visuals */}
-          <OrbitRing rx={rx} ry={ry} />
+          <ArcTrack arenaWidth={arenaWidth} arcHeight={arcHeight} centerY={centerY} />
 
-          {/* Center pulse */}
-          <div style={{ position: "relative", zIndex: 1 }}>
-            <motion.div
-              animate={{ scale: [1, 1.15, 1], opacity: [0.18, 0.06, 0.18] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-              style={{
-                width: 64, height: 64, borderRadius: "50%",
-                border: `1px solid ${P.sky}`,
-                position: "absolute",
-                top: "50%", left: "50%",
-                transform: "translate(-50%, -50%)",
-              }}
-            />
-            <div style={{
-              width: 10, height: 10, borderRadius: "50%",
-              background: P.sky, opacity: 0.5,
-              position: "absolute",
-              top: "50%", left: "50%",
-              transform: "translate(-50%, -50%)",
-            }} />
-          </div>
+          {arenaWidth > 0 && trackItems.map((p, i) => {
+            // Raw x position along the doubled track, then wrapped by the
+            // current scroll offset so cards loop seamlessly.
+            let x = i * step - scrollX;
+            // Bring anything that's drifted far off either side back into
+            // a renderable range (keeps the loop seamless at any width).
+            while (x < -step * 1.5) x += trackWidth * 2;
+            while (x > arenaWidth + step * 1.5) x -= trackWidth * 2;
 
-          {/* Cards */}
-          {projects.map((p, i) => {
-            const cardAngle = (angle + (360 / TOTAL) * i) % 360;
             return (
-              <OrbitCard
-                key={p.title}
+              <CarouselCard
+                key={`${p.title}-${i}`}
                 project={p}
-                angleDeg={cardAngle}
-                rx={rx}
-                ry={ry}
-                paused={paused}
+                x={x}
+                arenaWidth={arenaWidth}
+                cardW={cardW}
+                cardH={cardH}
+                arcHeight={arcHeight}
                 onClick={() => handleCardClick(p)}
               />
             );
@@ -492,7 +518,7 @@ const Projects = () => {
 
           {/* Pause hint */}
           <div style={{
-            position: "absolute", bottom: 12, left: "50%", transform: "translateX(-50%)",
+            position: "absolute", bottom: 8, left: "50%", transform: "translateX(-50%)",
             fontFamily: P.mono, fontSize: 9, letterSpacing: "0.2em",
             textTransform: "uppercase", color: P.cream, opacity: 0.2,
             pointerEvents: "none",

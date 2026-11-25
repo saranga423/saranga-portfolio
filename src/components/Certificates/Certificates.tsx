@@ -6,8 +6,12 @@ import {
   FiArrowUpRight,
   FiCheck,
   FiCalendar,
+  FiSearch,
+  FiChevronDown,
+  FiChevronLeft,
+  FiChevronRight,
 } from "react-icons/fi";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { SectionHeading } from "../About/SectionHeading";
 
 type Certificate = {
@@ -19,6 +23,10 @@ type Certificate = {
   url?: string;
   description?: string;
 };
+
+type SortKey = "newest" | "oldest" | "title" | "issuer";
+
+const PAGE_SIZE = 6;
 
 const certs: Certificate[] = [
   {
@@ -167,6 +175,33 @@ const getStyle = (category: string) =>
     soft: "rgba(165,180,252,.08)",
     code: "CR",
   };
+
+const SORT_OPTIONS: { value: SortKey; label: string }[] = [
+  { value: "newest", label: "Newest first" },
+  { value: "oldest", label: "Oldest first" },
+  { value: "title", label: "Title A–Z" },
+  { value: "issuer", label: "Issuer A–Z" },
+];
+
+function sortCertificates(list: Certificate[], sortBy: SortKey) {
+  const sorted = [...list];
+  switch (sortBy) {
+    case "newest":
+      return sorted.sort(
+        (a, b) => Number(b.year ?? 0) - Number(a.year ?? 0)
+      );
+    case "oldest":
+      return sorted.sort(
+        (a, b) => Number(a.year ?? 0) - Number(b.year ?? 0)
+      );
+    case "title":
+      return sorted.sort((a, b) => a.title.localeCompare(b.title));
+    case "issuer":
+      return sorted.sort((a, b) => a.issuer.localeCompare(b.issuer));
+    default:
+      return sorted;
+  }
+}
 
 function CertificateModal({
   cert,
@@ -334,20 +369,22 @@ function CertificateCard({
   return (
     <motion.button
       type="button"
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.12 }}
+      layout="position"
+      initial={{ opacity: 0, y: 20, scale: 0.98 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      exit={{ opacity: 0, y: -10, scale: 0.98 }}
       transition={{
-        duration: 0.6,
-        delay: Math.min(index * 0.045, 0.22),
+        duration: 0.45,
+        delay: Math.min(index * 0.05, 0.3),
         ease: [0.22, 1, 0.36, 1],
       }}
-      whileHover={{ y: -6 }}
+      whileHover={{ y: -7 }}
+      whileTap={{ scale: 0.985 }}
       onClick={onSelect}
-      className="group relative w-full overflow-hidden rounded-[22px] border border-white/[0.07] bg-[#0a0c12] text-left transition-all duration-300 hover:border-white/[0.14] hover:bg-[#0d1018]"
+      className="group relative w-full overflow-hidden rounded-[22px] border border-white/[0.07] bg-[#0a0c12] text-left shadow-[0_0_0_rgba(0,0,0,0)] transition-all duration-300 hover:border-white/[0.16] hover:bg-[#0d1018] hover:shadow-[0_18px_50px_-20px_rgba(0,0,0,.65)]"
     >
       {/* Number */}
-      <span className="absolute right-5 top-5 font-mono text-[9px] text-white/15">
+      <span className="absolute right-5 top-5 font-mono text-[9px] text-white/15 transition-colors duration-300 group-hover:text-white/30">
         {String(index + 1).padStart(2, "0")}
       </span>
 
@@ -357,10 +394,18 @@ function CertificateCard({
         style={{ background: style.accent }}
       />
 
+      {/* Diagonal sheen sweep on hover */}
+      <div
+        className="pointer-events-none absolute inset-0 -translate-x-full opacity-0 transition-all duration-700 ease-out group-hover:translate-x-full group-hover:opacity-100"
+        style={{
+          background: `linear-gradient(115deg, transparent 40%, ${style.accent}14 50%, transparent 60%)`,
+        }}
+      />
+
       <div className="relative p-6">
         <div className="mb-9 flex items-center justify-between">
           <div
-            className="flex h-11 w-11 items-center justify-center rounded-xl border"
+            className="flex h-11 w-11 items-center justify-center rounded-xl border transition-transform duration-300 group-hover:scale-105"
             style={{
               color: style.accent,
               borderColor: `${style.accent}25`,
@@ -424,26 +469,124 @@ function CertificateCard({
   );
 }
 
+function EmptyState({ onReset }: { onReset: () => void }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="col-span-full flex flex-col items-center justify-center rounded-[22px] border border-dashed border-white/10 bg-white/[0.015] px-6 py-16 text-center"
+    >
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 text-white/25">
+        <FiSearch size={18} />
+      </div>
+      <p className="text-sm text-white/50">No credentials match your filters.</p>
+      <button
+        type="button"
+        onClick={onReset}
+        className="mt-4 rounded-full border border-white/10 px-4 py-2 font-mono text-[9px] uppercase tracking-[0.15em] text-white/40 transition hover:border-white/20 hover:text-white/80"
+      >
+        Clear filters
+      </button>
+    </motion.div>
+  );
+}
+
 const Certificates = () => {
   const [selected, setSelected] = useState<Certificate | null>(null);
   const [activeCategory, setActiveCategory] = useState("All");
+  const [search, setSearch] = useState("");
+  const [sortBy, setSortBy] = useState<SortKey>("newest");
+  const [page, setPage] = useState(1);
+  const gridRef = useRef<HTMLDivElement | null>(null);
 
   const handleSelect = useCallback((cert: Certificate) => {
     setSelected(cert);
   }, []);
 
-  const categories = [
-    "All",
-    ...Array.from(new Set(certs.map((cert) => cert.category))),
-  ];
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(certs.map((cert) => cert.category)))],
+    []
+  );
 
-  const filtered =
-    activeCategory === "All"
-      ? certs
-      : certs.filter((cert) => cert.category === activeCategory);
+  const institutionCount = useMemo(
+    () => new Set(certs.map((cert) => cert.issuer)).size,
+    []
+  );
+  const featuredCount = useMemo(
+    () => certs.filter((cert) => cert.featured).length,
+    []
+  );
+  const featuredCert = useMemo(
+    () => certs.find((cert) => cert.featured) ?? null,
+    []
+  );
 
-  const institutionCount = new Set(certs.map((cert) => cert.issuer)).size;
-  const featuredCount = certs.filter((cert) => cert.featured).length;
+  // Filter (category + search) then sort — recomputed only when an input changes.
+  const filteredSorted = useMemo(() => {
+    const query = search.trim().toLowerCase();
+
+    const byCategory =
+      activeCategory === "All"
+        ? certs
+        : certs.filter((cert) => cert.category === activeCategory);
+
+    const bySearch = query
+      ? byCategory.filter(
+          (cert) =>
+            cert.title.toLowerCase().includes(query) ||
+            cert.issuer.toLowerCase().includes(query) ||
+            cert.category.toLowerCase().includes(query)
+        )
+      : byCategory;
+
+    return sortCertificates(bySearch, sortBy);
+  }, [activeCategory, search, sortBy]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredSorted.length / PAGE_SIZE));
+
+  // Keep the current page in range whenever the filtered set changes size.
+  useEffect(() => {
+    setPage((p) => Math.min(p, totalPages));
+  }, [totalPages]);
+
+  const paginated = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return filteredSorted.slice(start, start + PAGE_SIZE);
+  }, [filteredSorted, page]);
+
+  const handleCategoryChange = useCallback((category: string) => {
+    setActiveCategory(category);
+    setPage(1);
+  }, []);
+
+  const handleSearchChange = useCallback((value: string) => {
+    setSearch(value);
+    setPage(1);
+  }, []);
+
+  const handleSortChange = useCallback((value: SortKey) => {
+    setSortBy(value);
+    setPage(1);
+  }, []);
+
+  const resetFilters = useCallback(() => {
+    setActiveCategory("All");
+    setSearch("");
+    setSortBy("newest");
+    setPage(1);
+  }, []);
+
+  const goToPage = useCallback(
+    (next: number) => {
+      const clamped = Math.max(1, Math.min(totalPages, next));
+      setPage(clamped);
+      gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    },
+    [totalPages]
+  );
+
+  const rangeStart = filteredSorted.length === 0 ? 0 : (page - 1) * PAGE_SIZE + 1;
+  const rangeEnd = Math.min(page * PAGE_SIZE, filteredSorted.length);
 
   return (
     <section
@@ -484,19 +627,20 @@ const Certificates = () => {
         />
 
         {/* Featured certificate */}
-        {certs.find((cert) => cert.featured) && (
+        {featuredCert && (
           <motion.button
             type="button"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            onClick={() => setSelected(certs.find((cert) => cert.featured)!)}
+            whileHover={{ y: -3 }}
+            onClick={() => setSelected(featuredCert)}
             className="group relative mb-6 w-full overflow-hidden rounded-[26px] border border-primary/15 bg-primary/[0.045] text-left transition-all duration-500 hover:border-primary/30 hover:bg-primary/[0.065]"
           >
             <div className="absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-primary/[0.08] to-transparent" />
 
             <div className="relative grid items-center gap-8 p-6 sm:p-8 lg:grid-cols-[auto_1fr_auto]">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-primary/20 bg-primary/10 text-primary transition-transform duration-300 group-hover:scale-105">
                 <FiAward size={25} />
               </div>
 
@@ -507,15 +651,15 @@ const Certificates = () => {
                   </span>
                   <span className="h-1 w-1 rounded-full bg-primary/50" />
                   <span className="font-mono text-[9px] text-white/25">
-                    2026
+                    {featuredCert.year}
                   </span>
                 </div>
 
                 <h3 className="text-xl font-semibold tracking-[-0.025em] text-white sm:text-2xl">
-                  AI/ML Engineer — Stage 2
+                  {featuredCert.title}
                 </h3>
                 <p className="mt-1 text-sm text-white/35">
-                  SLIIT · Artificial Intelligence
+                  {featuredCert.issuer} · {featuredCert.category}
                 </p>
               </div>
 
@@ -556,7 +700,52 @@ const Certificates = () => {
           </div>
         </div>
 
-        {/* Filter */}
+        {/* Search + Sort */}
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="relative flex-1">
+            <FiSearch
+              size={14}
+              className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-white/25"
+            />
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => handleSearchChange(event.target.value)}
+              placeholder="Search by title, issuer, or category…"
+              className="w-full rounded-full border border-white/[0.07] bg-white/[0.02] py-2.5 pl-10 pr-9 text-sm text-white/80 placeholder:text-white/20 outline-none transition focus:border-primary/30 focus:bg-white/[0.035]"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => handleSearchChange("")}
+                aria-label="Clear search"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-white/25 transition hover:text-white/70"
+              >
+                <FiX size={14} />
+              </button>
+            )}
+          </div>
+
+          <div className="relative shrink-0">
+            <select
+              value={sortBy}
+              onChange={(event) => handleSortChange(event.target.value as SortKey)}
+              className="w-full appearance-none rounded-full border border-white/[0.07] bg-white/[0.02] py-2.5 pl-4 pr-9 font-mono text-[10px] uppercase tracking-[0.12em] text-white/60 outline-none transition focus:border-primary/30 sm:w-auto"
+            >
+              {SORT_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value} className="bg-[#0a0c12] text-white">
+                  {option.label}
+                </option>
+              ))}
+            </select>
+            <FiChevronDown
+              size={13}
+              className="pointer-events-none absolute right-3.5 top-1/2 -translate-y-1/2 text-white/25"
+            />
+          </div>
+        </div>
+
+        {/* Category filter */}
         <div className="mb-7 flex items-center justify-between gap-5">
           <div className="flex max-w-full gap-2 overflow-x-auto pb-1 scrollbar-hide">
             {categories.map((category) => {
@@ -566,7 +755,7 @@ const Certificates = () => {
                 <button
                   key={category}
                   type="button"
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => handleCategoryChange(category)}
                   className={`shrink-0 rounded-full border px-4 py-2 font-mono text-[9px] uppercase tracking-[0.13em] transition-all ${
                     active
                       ? "border-primary/30 bg-primary/10 text-primary"
@@ -580,34 +769,74 @@ const Certificates = () => {
           </div>
 
           <span className="hidden shrink-0 font-mono text-[9px] text-white/20 sm:block">
-            {String(filtered.length).padStart(2, "0")} shown
+            {filteredSorted.length === 0
+              ? "0 shown"
+              : `${rangeStart}–${rangeEnd} of ${filteredSorted.length}`}
           </span>
         </div>
 
         {/* Cards */}
         <motion.div
+          ref={gridRef}
           layout
           className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
         >
           <AnimatePresence mode="popLayout">
-            {filtered.map((cert, index) => (
-              <motion.div
-                key={cert.title}
-                layout
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.97 }}
-                transition={{ duration: 0.25 }}
-              >
+            {paginated.length > 0 ? (
+              paginated.map((cert, index) => (
                 <CertificateCard
+                  key={cert.title}
                   cert={cert}
                   index={index}
                   onSelect={() => handleSelect(cert)}
                 />
-              </motion.div>
-            ))}
+              ))
+            ) : (
+              <EmptyState key="empty" onReset={resetFilters} />
+            )}
           </AnimatePresence>
         </motion.div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() => goToPage(page - 1)}
+              disabled={page === 1}
+              aria-label="Previous page"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.08] text-white/40 transition hover:border-white/20 hover:text-white/80 disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-white/[0.08] disabled:hover:text-white/40"
+            >
+              <FiChevronLeft size={15} />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => goToPage(n)}
+                aria-current={n === page ? "page" : undefined}
+                className={`flex h-9 w-9 items-center justify-center rounded-full border font-mono text-[10px] transition ${
+                  n === page
+                    ? "border-primary/30 bg-primary/10 text-primary"
+                    : "border-white/[0.07] text-white/35 hover:border-white/20 hover:text-white/75"
+                }`}
+              >
+                {n}
+              </button>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => goToPage(page + 1)}
+              disabled={page === totalPages}
+              aria-label="Next page"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/[0.08] text-white/40 transition hover:border-white/20 hover:text-white/80 disabled:cursor-not-allowed disabled:opacity-25 disabled:hover:border-white/[0.08] disabled:hover:text-white/40"
+            >
+              <FiChevronRight size={15} />
+            </button>
+          </div>
+        )}
 
         {/* Footer */}
         <motion.div
